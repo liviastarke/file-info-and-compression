@@ -95,7 +95,8 @@ void free_node(struct node * node, int n){
 }
 
 void free_nodes(){
-	for (int i = 0; i < num_nodes; i++){
+	int total_nodes = num_nodes;
+	for (int i = 0; i < total_nodes; i++){
 		free_node(&nodes[i], i);
 		num_nodes--;
 	}
@@ -150,6 +151,23 @@ struct node * pop_node(int index){
 	return popped;
 }
 
+int find_code_index(struct char_code *array, int size, char target_char) {
+    for (int i = 0; i < size; i++) {
+        if (array[i].c == target_char) {
+            return i; // Found
+        }
+    }
+    return -1; // Not found
+}
+int find_char_index(struct char_code *array, int size, char * target_code) {
+    for (int i = 0; i < size; i++) {
+        if (strcmp(array[i].code, target_code) == 0) {
+            return i; // Found
+        }
+    }
+    return -1; // Not found
+}
+
 // to be used by <stdlib.h>'s qsort
 int compare_by_frequency(const void * a, const void * b){
 	const struct node * node_a = (const struct node *) a;
@@ -157,11 +175,11 @@ int compare_by_frequency(const void * a, const void * b){
 	return (node_a->freq - node_b->freq); // ascending order, change a and b for descending order
 }
 
-int count_frequencies(){
+int count_frequencies(FILE * file){
 	// count frequencies
 	int occurences[CHARS_TO_COUNT] = {0}; // chars de 0 a 255 do ASCII extendido (dá para fazer de 0 a 127 também)
-	int c = getchar(); // fgetc(file);
-	for (; c != EOF && c != '\0'; c = getchar()){
+	int c = fgetc(file);
+	for (; c != EOF && c != '\0'; c = fgetc(file)){
 		occurences[c]++; // adiciona uma ocorrência na posição do número correspondente ao caractere
 	}
 
@@ -216,6 +234,7 @@ int huffman_encode(struct node * current_node, char * current_code, int depth, s
 		return 0;
 	}
 	if (current_node->c != 0 && !current_node->left && !current_node->right){
+		current_code[depth] = '\0';
 		codes[index_codes].c = current_node->c;
 		strncpy(codes[index_codes].code, current_code, CHARS_TO_COUNT*sizeof(char)); // codes[index_codes].code = current_code;
 		index_codes++;
@@ -227,6 +246,8 @@ int huffman_encode(struct node * current_node, char * current_code, int depth, s
 	return 1;
 }
 
+int huffman_decode(){}
+
 int main(int argc, char **argv){
 
 	// UNHAPPY PATH
@@ -235,11 +256,11 @@ int main(int argc, char **argv){
 		exit(EXIT_FAILURE);
 	}
 
-	// char* path = argv[1];
-	// FILE* file = fopen(path, "r");
-	// fread(&buf, sizeof(), 1, file);
+	char* path = argv[1];
+	FILE* file = fopen(path, "r");
 
-	count_frequencies();
+	count_frequencies(file);
+
 	int total_chars = num_nodes;
 	print_nodes();
 
@@ -250,12 +271,39 @@ int main(int argc, char **argv){
 	char buf[CHARS_TO_COUNT];
 	huffman_encode(&nodes[0], buf, 0, codes);
 
+	printf("\nGenerated codes:\n");
 	for(int i = 0; i < total_chars; i++){
 		printf("%c: %s\n", codes[i].c, codes[i].code);
 	}
-	
 
+	fseek(file, 0, SEEK_END);
+	char encoded_buf[256*ftell(file)]; // assuming the encoded file is smaller than the original
+
+	printf("\nEncoded text:\n");
+	fseek(file, 0, SEEK_SET);
+	char c = fgetc(file);
+	int num_comp_bits, num_bytes_file;
+	for (num_bytes_file = num_comp_bits = 0; c != EOF && c != '\0'; c = fgetc(file), num_bytes_file++){
+		strncpy(buf, codes[find_code_index(codes, total_chars, c)].code, CHARS_TO_COUNT);
+		printf("%s\n", buf);
+		strncpy(encoded_buf + num_comp_bits, buf, CHARS_TO_COUNT);
+
+		// Calculate number of bits of compressed text
+		int i;
+		for (i = 0; buf[i] != '\0'; i++);
+		num_comp_bits += i;
+	}
+	
+	printf("\nTotal number of bits in compressed file is %d\n", num_comp_bits);
+	printf("Estimated number of bits in original file is %d\n\n", num_bytes_file*8);
+
+	printf("%s\n", encoded_buf);
+	
+	fclose(file);
+
+	huffman_decode();
+	
 	free_nodes();
-	print_nodes();
+	print_nodes(); // shows nothing
 	return 0;
 }
