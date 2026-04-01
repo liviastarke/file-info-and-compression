@@ -12,11 +12,19 @@ struct node {
 	struct node * right;
 };
 
+struct char_code {
+	char c;
+	char code[CHARS_TO_COUNT]; // Enough space for the longest possible path + null terminator
+	//int code;
+};
+
+
 struct node * pop_node(int index);
 
 int num_nodes = 0; // the number of elements in nodes. Always bigger than max index of nodes by 1. Equal to the multiplier of last allocation.
 struct node * nodes; // nodes list is global
 
+int index_codes = 0;
 
 // void print_node(struct node * node, char * identifier){
 // 	printf("\nNODE %s\nc: %c\nfreq: %d\n", identifier, node->c, node->freq);
@@ -76,7 +84,7 @@ void print_nodes(){
 // }
 
 void free_node(struct node * node, int n){
-	printf("\nfreeing: NODE %d\nc: %c\nfreq: %d\n", n, node->c, node->freq);
+	//printf("\nfreeing: NODE %d\nc: %c\nfreq: %d\n", n, node->c, node->freq);
 	if(node->left){
 		free_node(node->left, ++n);
 	}
@@ -193,7 +201,7 @@ int build_tree(){
 		struct node * right = pop_node(0);
 
 		struct node merged;
-		// merged.c = 257; // algum número para indicar que não é um node de caractere?
+		merged.c = 0; // algum número para indicar que não é um node de caractere
 		merged.freq = left->freq + right->freq;
 		merged.left = left;
 		merged.right = right;
@@ -201,6 +209,20 @@ int build_tree(){
 	}
 	
 	return 0;
+}
+
+int huffman_encode(struct node * current_node, char * current_code, int depth, struct char_code * codes){ // struct node * current_node, int current_code, struct char_code * codes
+	if(!current_node){
+		return 0;
+	}
+	if (current_node->c != 0 && !current_node->left && !current_node->right){
+		codes[index_codes].c = current_node->c;
+		strncpy(codes[index_codes].code, current_code, CHARS_TO_COUNT*sizeof(char)); // codes[index_codes].code = current_code;
+		index_codes++;
+	}
+	huffman_encode(current_node->left, current_code << 1, codes); // change to string
+	huffman_encode(current_node->right, (current_code << 1) + 0b1, codes);
+	return 1;
 }
 
 int main(int argc, char **argv){
@@ -216,8 +238,20 @@ int main(int argc, char **argv){
 	// fread(&buf, sizeof(), 1, file);
 
 	count_frequencies();
+	int total_chars = num_nodes;
 	print_nodes();
+
 	build_tree();
+
+	//int codes[total_chars];
+	struct char_code codes[total_chars];
+	huffman_encode(&nodes[0], 0b0, codes);
+
+	for(int i = 0; i < total_chars; i++){
+		printf("%c: %b\n", codes[i].c, codes[i].code);
+	}
+	
+
 	free_nodes();
 	print_nodes();
 	return 0;
