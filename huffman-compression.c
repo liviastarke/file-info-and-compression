@@ -246,7 +246,73 @@ int huffman_encode(struct node * current_node, char * current_code, int depth, s
 	return 1;
 }
 
-int huffman_decode(){}
+
+char is_in(struct char_code * codes, int size, char * code){
+	int index = find_char_index(codes, size, code);
+	if (index == -1){
+		return 0;
+	}
+	return codes[index].c;
+}
+
+// char * huffman_decode(char * string, int size, struct char_code * codes, int num_codes){
+// 	char current_code[CHARS_TO_COUNT]; // remember CHARS_TO_COUNT is equal to the max length of a code
+// 	char * decoded = NULL;
+// 	int decoded_len;
+// 	for (int i = 0, decoded_len = 0; i < size && string[i] != EOF; i++){
+// 		for (int j = 0; j < CHARS_TO_COUNT; j++){
+// 			current_code[j] = string[i];
+// 			current_code[j+1] = '\0';
+// 			char c = is_in(codes, num_codes, current_code);
+// 			if (c){
+// 				decoded = realloc(decoded, sizeof(char)*(decoded_len+2));
+// 				decoded[decoded_len] = c;
+// 				decoded_len++;
+// 				strncpy(current_code, "\0", 2*sizeof(char));
+// 				j = 0;
+// 			}
+// 		}
+// 	}
+// 	decoded = realloc(decoded, sizeof(char)*(decoded_len+1));
+// 	decoded[decoded_len] = '\0';
+// 	return decoded;
+// }
+char * huffman_decode(char * string, int num_bits, struct char_code * codes, int num_codes){
+    char current_code[CHARS_TO_COUNT]; 
+    char * decoded = NULL;
+    int decoded_len = 0;
+    int j = 0; // This is our "accumulator" index
+
+    for (int i = 0; i < num_bits; i++){
+        current_code[j] = string[i];
+        current_code[j + 1] = '\0'; // Manually null-terminate so strcmp works
+        char c = is_in(codes, num_codes, current_code);
+        
+        if (c != 0){
+            // Match found! Grow the decoded string
+            decoded = realloc(decoded, decoded_len + 2); // +1 for char, +1 for \0
+            decoded[decoded_len] = c;
+            decoded_len++;
+            
+            j = 0; // Clear the accumulator to start the next character
+        } 
+		else {
+            // No match yet, move to the next position in current_code
+            j++;
+            
+            // Safety check to prevent overflow
+            if (j >= CHARS_TO_COUNT - 1) {
+                printf("Error detected: Code exceeded max length!\n");
+                break;
+            }
+        }
+    }
+
+    if (decoded) {
+        decoded[decoded_len] = '\0'; // Finalize the string
+    }
+    return decoded;
+}
 
 int main(int argc, char **argv){
 
@@ -301,8 +367,9 @@ int main(int argc, char **argv){
 	
 	fclose(file);
 
-	huffman_decode();
-	
+	char * decoded = huffman_decode(encoded_buf, num_comp_bits, codes, total_chars);
+	printf("%s\n", decoded);
+
 	free_nodes();
 	print_nodes(); // shows nothing
 	return 0;
