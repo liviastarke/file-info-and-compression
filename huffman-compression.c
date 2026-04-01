@@ -211,7 +211,7 @@ int build_tree(){
 	return 0;
 }
 
-int huffman_encode(struct node * current_node, char * current_code, int depth, struct char_code * codes){ // struct node * current_node, int current_code, struct char_code * codes
+int huffman_encode(struct node * current_node, char * current_code, int depth, struct char_code * codes){
 	if(!current_node){
 		return 0;
 	}
@@ -220,8 +220,10 @@ int huffman_encode(struct node * current_node, char * current_code, int depth, s
 		strncpy(codes[index_codes].code, current_code, CHARS_TO_COUNT*sizeof(char)); // codes[index_codes].code = current_code;
 		index_codes++;
 	}
-	huffman_encode(current_node->left, current_code << 1, codes); // change to string
-	huffman_encode(current_node->right, (current_code << 1) + 0b1, codes);
+	current_code[depth] = '0';
+	huffman_encode(current_node->left, current_code, depth+1, codes);
+	current_code[depth] = '1';
+	huffman_encode(current_node->right, current_code, depth+1, codes);
 	return 1;
 }
 
@@ -245,10 +247,11 @@ int main(int argc, char **argv){
 
 	//int codes[total_chars];
 	struct char_code codes[total_chars];
-	huffman_encode(&nodes[0], 0b0, codes);
+	char buf[CHARS_TO_COUNT];
+	huffman_encode(&nodes[0], buf, 0, codes);
 
 	for(int i = 0; i < total_chars; i++){
-		printf("%c: %b\n", codes[i].c, codes[i].code);
+		printf("%c: %s\n", codes[i].c, codes[i].code);
 	}
 	
 
