@@ -363,6 +363,10 @@ int main(int argc, char **argv){
 	printf("\nTotal number of bits in compressed file is %d\n", num_comp_bits);
 	printf("Estimated number of bits in original file is %d\n\n", num_bytes_file*8);
 
+	printf("RESULTADOS: O número total de bits no arquivo original é %d\n", num_bytes_file*8);
+	printf("RESULTADOS: O número total de bits no arquivo compactado é %d\n", num_comp_bits);
+	printf("RESULTADOS: A taxa de compressão é %.2f%%\n\n", (float) 100 * (num_bytes_file*8 - num_comp_bits) / (num_bytes_file*8));
+
 	printf("%s\n", encoded_buf);
 	
 	fclose(file);
