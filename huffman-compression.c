@@ -4,6 +4,7 @@
 #include <string.h>
 
 #define CHARS_TO_COUNT 256
+#define ENCODED_PREFIX_STR "encoded-"
 
 struct node {
 	char c;
@@ -107,6 +108,7 @@ void free_nodes(){
 int check_pointer(void * ptr){
 	if (!ptr){
 		printf("Allocation error!\n");
+		perror(NULL);
 		exit(EXIT_FAILURE);
 	}
 	return 0;
@@ -318,7 +320,7 @@ int main(int argc, char **argv){
 
 	// UNHAPPY PATH
 	if (argc != 2){
-		printf("HUFFMAN COMPRESSION: use comand + file path to compress a text file");
+		printf("HUFFMAN COMPRESSION: use comand + file path to compress a text file\n");
 		exit(EXIT_FAILURE);
 	}
 
@@ -373,6 +375,35 @@ int main(int argc, char **argv){
 
 	char * decoded = huffman_decode(encoded_buf, num_comp_bits, codes, total_chars);
 	printf("%s\n", decoded);
+
+	//
+	// write file
+	//
+
+	char * dest = malloc(strlen(ENCODED_PREFIX_STR) + strlen(path) + 1);
+	check_pointer(dest);
+	strcpy(dest, ENCODED_PREFIX_STR);
+	strcat(dest, path);
+	file = fopen(dest, "w");
+	free(dest); // free filename
+	check_pointer(file);
+
+	char byte = 0;
+	for (int i = 0; i < strlen(encoded_buf); i++){
+		if (encoded_buf[i] == '1'){
+			byte++;
+		}
+		byte << 1;
+		if (i%8 == 0){ // a cada byte (8 bits)
+			fwrite(&byte, sizeof(char), 1, file);
+			byte = 0;
+		}
+	}
+	fclose(file);
+
+	//
+	// exit
+	//
 
 	free_nodes();
 	print_nodes(); // shows nothing
