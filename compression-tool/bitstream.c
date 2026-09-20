@@ -55,3 +55,12 @@ void bw_flush (BitWriter *bw) { // Grava o último byte incompleto (se sobrou al
     }
     
 }
+
+// int main(){
+//     FILE * file = fopen("testedeescrita", "w");
+//     BitWriter writer;
+//     bw_init(&writer, file);
+//     bw_write_bits(&writer, 0b1011, 4);
+//     bw_write_bits(&writer, 0b0101, 4);
+//     fclose(file);
+// }

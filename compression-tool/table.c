@@ -55,17 +55,17 @@ int generate_codes(const HuffmanNode * root, HuffmanTable * out_table){
     return huffman_encode(root, 0, 0, out_table);
 }
 
-int main(){
-    // TEST: create fake tree
-    HuffmanNode * fake_tree = malloc(sizeof(HuffmanNode));
-    // fake_tree->ch = 'a';
-    fake_tree->left = malloc(sizeof(HuffmanNode));
-    fake_tree->left->ch = 'a';
-    fake_tree->right = malloc(sizeof(HuffmanNode));
-    fake_tree->right->ch = 'b';
+// int main(){
+//     // TEST: create fake tree
+//     HuffmanNode * fake_tree = malloc(sizeof(HuffmanNode));
+//     // fake_tree->ch = 'a';
+//     fake_tree->left = malloc(sizeof(HuffmanNode));
+//     fake_tree->left->ch = 'a';
+//     fake_tree->right = malloc(sizeof(HuffmanNode));
+//     fake_tree->right->ch = 'b';
 
-    HuffmanTable * table = malloc(sizeof(HuffmanTable));
-    generate_codes(fake_tree, table);
-    print_table(table);
-    return 0;
-}
+//     HuffmanTable * table = malloc(sizeof(HuffmanTable));
+//     generate_codes(fake_tree, table);
+//     print_table(table);
+//     return 0;
+// }
