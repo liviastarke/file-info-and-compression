@@ -22,7 +22,6 @@ typedef struct {
  */
 void pq_push(MinHeap *pq, HuffmanNode *node);
 
-HuffmanNode *pq_pop(MinHeap *pq);
 
 //PQ_H
 #endif
