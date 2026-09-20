@@ -21,7 +21,7 @@ typedef struct {
  * @brief inicializa a fila de prioridade (min-heap)
  */
 void pq_push(MinHeap *pq, HuffmanNode *node);
-
+HuffmanNode *pq_pop(MinHeap *pq);
 
 //PQ_H
 #endif
