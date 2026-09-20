@@ -7,13 +7,15 @@ void bw_init(BitWriter *bw, FILE *f) {
     bw->bit_count = 0; 
     
 }
-
-void bw_write_bit(BitWriter *bw, int bit){ // analisando se o bit é 0 ou 1
+//Escreve UM bit (0 ou 1). Quando o byte junta 8 bits, ele é gravado no arquivo.
+void bw_write_bit(BitWriter *bw, int bit){ 
     
-    bw->current_byte = (bw->current_byte << 1) | (bit & 1); // aqui seria um Comparação dos bits com número 1, se for maior que 1, tranforma, 
-    bw->bit_count++; //passa para o próximo bit, o & vai verificar se é um 1 ou 0, como não sei
+    // "<< 1" abre espaço à direita; "bit & 1" mantém só o último bit (0 ou 1)
+    // "|" encaixa esse bit na posição que foi aberta, isso ficou mais claro agora
+    bw->current_byte = (bw->current_byte << 1) | (bit & 1); 
+    bw->bit_count++; // conta todos os bits até os zeros
     
-    if (bw->bit_count == 8){ //caso já tenha chegado a 8 bits
+    if (bw->bit_count == 8){ // se estiver cheio
         
         fputc(bw->current_byte, bw->file); 
         bw->current_byte = 0; 
@@ -23,13 +25,29 @@ void bw_write_bit(BitWriter *bw, int bit){ // analisando se o bit é 0 ou 1
     
 }
 
-void bw_flush (BitWriter *bw) { //agora se o arquivo no final de tudo chegou mais que 8
+void bw_write_bits(BitWriter *bw, uint32_t bits, uint8_t len) {
+    for (int i = len - 1; i >= 0; i--) {
+        bw_write_bit(bw, (bits >> i) & 1);
+    }
+}
+
+
+void count_frequencies(FILE *in, int freqs[256]) { // Conta de 0 a 255
+    for (int i = 0; i < 256; i++) freqs[i] = 0;
+    int c;
+    while ((c = fgetc(in)) != EOF) {
+        freqs[c]++;
+    }
+}
+
+void bw_flush (BitWriter *bw) { // Grava o último byte incompleto (se sobrou algum bit), completando com zeros!!!
     
-    if (bw->bit_count >0){ // se ainda a valores dentro do contador
+    if (bw->bit_count >0){ // sobrou um byte incompleto 
         
-        bw->current_byte = bw->current_byte << (8 - bw->bit_count); // aqui ele vai "empurrar" os valores que sobraram para frente do valor do byte atual, tipo 8 - 3 
-       // completando com zeros à direita 10100000
-       
+        bw->current_byte = bw->current_byte << (8 - bw->bit_count); 
+        //Empurra os bits que existem para a esquerda do byte os espaços que ficam à direita viram zeros 
+        //Por exemplo: 3 bits -> 8 - 3 = 5 posições, então vai ficar 00000101 << 5 = 10100000
+        
         fputc(bw->current_byte, bw->file); 
         bw->current_byte = 0;
         bw->bit_count = 0; 
