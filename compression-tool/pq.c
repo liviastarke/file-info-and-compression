@@ -16,7 +16,7 @@ void pq_push(MinHeap *pq, HuffmanNode *nd)
     // Guarda a posição do novo nó
     int i = pq->size - 1;
 
-    while (i > 0) {
+    while (i > 0) { 
 
         // Calcula o índice do nó pai
         int parent = (i - 1) / 2;
