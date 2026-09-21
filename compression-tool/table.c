@@ -69,7 +69,7 @@ int decode_stream(const HuffmanNode * root, const uint8_t *bits, size_t bit_len,
         return EXIT_FAILURE;
     }
 
-    // exit if empty tree
+    // exit if empty bitstream
     if (bit_len == 0){
         printf("Couldn't decode: length zero bit sequence.\n");
         return EXIT_FAILURE;
