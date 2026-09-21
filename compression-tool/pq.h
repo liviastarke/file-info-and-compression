@@ -1,50 +1,45 @@
-/** 
- * @file pq.h
- * @brief declaração de fila de prioridade (min-heap) para armazenar nós da árvore de Huffman.
- */
-
+// Declaração da fila de prioridade (Min-Heap)
 #ifndef PQ_H
 #define PQ_H
 
-#include "common.h" //min-heap guarda huffmanNode*
+#include "common.h"
 
-/**
- * @brief estrutura do , min-heap para armazenar nós da árvore de Huffman
- */
+//Estrutura do Min-Heap para armazenar nós da árvore de Huffman.
 typedef struct {
-    HuffmanNode *nodes[ALPHABET_SIZE];
+    HuffmanNode *node[ALPHABET_SIZE];
     int size;
 } MinHeap;
 
 
-/**
- * @brief inicializa a fila de prioridade (min-heap)
+/*
+ * Insere um nó na fila de prioridade.
  */
 void pq_push(MinHeap *pq, HuffmanNode *nd) {
+  int i = pq->size;
 
-    //colocar o nó na última posição
+  pq->node[size] = pq->node;
+  pq->size++;
 
-    //inserir o nó na última posição do heap
-
-    //fazer nó subir até a posição correta enquanto a frequência do nó pai for maior que a frequência do nó atual
-    /*
-    while() {
-        //sei la
+  while() {
+    int pai = ((i - 1) / 2); 
+   
+    //o que diabos é isso 
+    if (pq->node[i]->freq >= pq->node[pai]->freq) {
+      return 0;
     }
-    */
-    //trocar o nó atual com o nó pai
 
-    //continuar a partir da posição do nó pai
-    
+    HuffmanNode *temp = pq->node[i];
+
+    pq->node[i] = pq->node[pai];
+    node[pai] = temp;
+
+    i = pai;
+  }
 }
 
+// Remove e retorna o nó de menor frequência.
 HuffmanNode *pq_pop(MinHeap *pq) {
-
-    if (pq->size == 0) {
-        //printf("Fila vazia.\n");
-        return NULL;
-    }    
+  
 }
 
-//PQ_H
-#endif
+#endif /* PQ_H */   
