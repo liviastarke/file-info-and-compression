@@ -8,10 +8,9 @@
 /**
  * @brief Insere um nó na fila de prioridade (Min-Heap)
  */
-void pq_push(MinHeap *pq, HuffmanNode *nd)
-{
+void pq_push(MinHeap *pq, HuffmanNode *nd) {
     pq->nodes[pq->size] = nd;
-    pq->size++;
+    pq->size++;  
 
     // Guarda a posição do novo nó
     int i = pq->size - 1;
