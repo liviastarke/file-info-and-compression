@@ -7,6 +7,16 @@ HuffmanNode *create_leaf(unsigned char ch, int freq){
 	new_leaf.left = new_leaf.right = NULL;
 	new_leaf.ch = ch;
 	new_leaf.freq = freq;
+	return new_leaf;
+}
+
+HuffmanNode *node_merge(HuffmanNode *left, HuffmanNode *right){
+	HuffmanNode * new_parent = malloc(sizeof(HuffmanNode));
+	new_parent.left = left;
+	new_parent.right = right;
+	new_parent.freq = left->freq + right->freq;
+	new_parent.ch = 0;
+	return new_parent;
 }
 
 HuffmanNode *build_tree_from_frequencies(const int freqs[ALPHABET_SIZE]){
@@ -28,9 +38,22 @@ HuffmanNode *build_tree_from_frequencies(const int freqs[ALPHABET_SIZE]){
 		return NULL;
 	}
 
-	// TODO
-	
+	HuffmanNode * left;
+	HuffmanNode * right; 
+	HuffmanNode * parent;
+
+	while (nodes.size >= 2){
+		left = pq_pop(nodes);
+		right = pq_pop(nodes);
+		parent = node_merge(left, right);
+		pq_push(nodes, parent);
+	}
+
+	parent = pq_pop(nodes);
+
 	free(nodes);
+
+	return parent; // the root of all the tree
 }
 
 //int build_tree(){
