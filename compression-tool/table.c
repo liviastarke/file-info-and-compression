@@ -55,17 +55,76 @@ int generate_codes(const HuffmanNode * root, HuffmanTable * out_table){
     return huffman_encode(root, 0, 0, out_table);
 }
 
-// int main(){
-//     // TEST: create fake tree
-//     HuffmanNode * fake_tree = malloc(sizeof(HuffmanNode));
-//     // fake_tree->ch = 'a';
-//     fake_tree->left = malloc(sizeof(HuffmanNode));
-//     fake_tree->left->ch = 'a';
-//     fake_tree->right = malloc(sizeof(HuffmanNode));
-//     fake_tree->right->ch = 'b';
+int decode_stream(const HuffmanNode * root, const uint8_t *bits, size_t bit_len, FILE * out){
 
-//     HuffmanTable * table = malloc(sizeof(HuffmanTable));
-//     generate_codes(fake_tree, table);
-//     print_table(table);
-//     return 0;
-// }
+    // exit if empty tree
+    if (root == NULL){
+        printf("Couldn't decode: Huffman tree was empty.\n");
+        return EXIT_FAILURE;
+    }
+
+    // exit if no bits to decode
+    if (bits == NULL){
+        printf("Couldn't decode: No bit sequence to decode.\n");
+        return EXIT_FAILURE;
+    }
+
+    // exit if empty tree
+    if (bit_len == 0){
+        printf("Couldn't decode: length zero bit sequence.\n");
+        return EXIT_FAILURE;
+    }
+
+    // Special single node tree case
+    if (root->left == NULL && root->right == NULL){
+        for (size_t i = 0; i < bit_len; i++){
+            fputc(root->ch, out);
+        }
+        return EXIT_SUCCESS;
+    }
+
+    const HuffmanNode * current_node = root;
+
+    for (size_t i = 0; i <= bit_len; i++){
+        uint8_t byte = bits[i/8];
+
+        if (current_node->left == NULL && current_node->right == NULL){
+            fputc(current_node->ch, out);
+            // if (root == current_node) continue; // Special single node tree case, simpler code but probably more comparisons (slower)
+            current_node = root;
+        }
+
+        // Probably better to put this block up for one less iteration.
+        if (byte >> (7 - i%8) & 1){
+            current_node = current_node->right;
+        }
+        else{
+            current_node = current_node->left;
+        }
+        // I haven't properly calculated the consequences, but think it's wise not to access current_node after this point, due to NULL pointers
+    }
+}
+
+int main(){
+    // TEST: create fake tree
+    HuffmanNode * fake_tree = malloc(sizeof(HuffmanNode));
+    // fake_tree->ch = 'a'; fake_tree->left = NULL; fake_tree->right = NULL;
+    fake_tree->left = malloc(sizeof(HuffmanNode));
+    fake_tree->left->ch = 'a';
+    fake_tree->right = malloc(sizeof(HuffmanNode));
+    fake_tree->right->ch = 'b';
+
+    HuffmanTable * table = malloc(sizeof(HuffmanTable));
+    generate_codes(fake_tree, table);
+    print_table(table);
+
+    uint8_t compressed_data[] = {0x32, 0x32};
+    decode_stream(fake_tree, compressed_data, 16, stdout);
+    printf("\n\n");
+
+    compressed_data[0] = 0xff;
+    decode_stream(fake_tree, compressed_data, 16, stdout);
+    printf("\n\n");
+
+    return 0;
+}
