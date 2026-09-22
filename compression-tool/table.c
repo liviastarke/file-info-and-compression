@@ -85,46 +85,43 @@ int decode_stream(const HuffmanNode * root, const uint8_t *bits, size_t bit_len,
 
     const HuffmanNode * current_node = root;
 
-    for (size_t i = 0; i <= bit_len; i++){
+    for (size_t i = 0; i < bit_len; i++){
         uint8_t byte = bits[i/8];
 
-        if (current_node->left == NULL && current_node->right == NULL){
-            fputc(current_node->ch, out);
-            // if (root == current_node) continue; // Special single node tree case, simpler code but probably more comparisons (slower)
-            current_node = root;
-        }
-
-        // Probably better to put this block up for one less iteration.
         if (byte >> (7 - i%8) & 1){
             current_node = current_node->right;
         }
         else{
             current_node = current_node->left;
         }
-        // I haven't properly calculated the consequences, but think it's wise not to access current_node after this point, due to NULL pointers
+
+        if (current_node->left == NULL && current_node->right == NULL){
+            fputc(current_node->ch, out);
+            current_node = root;
+        }
     }
 }
 
-int main(){
-    // TEST: create fake tree
-    HuffmanNode * fake_tree = malloc(sizeof(HuffmanNode));
-    // fake_tree->ch = 'a'; fake_tree->left = NULL; fake_tree->right = NULL;
-    fake_tree->left = malloc(sizeof(HuffmanNode));
-    fake_tree->left->ch = 'a';
-    fake_tree->right = malloc(sizeof(HuffmanNode));
-    fake_tree->right->ch = 'b';
+// int main(){
+//     // TEST: create fake tree
+//     HuffmanNode * fake_tree = malloc(sizeof(HuffmanNode));
+//     // fake_tree->ch = 'a'; fake_tree->left = NULL; fake_tree->right = NULL;
+//     fake_tree->left = malloc(sizeof(HuffmanNode));
+//     fake_tree->left->ch = 'a';
+//     fake_tree->right = malloc(sizeof(HuffmanNode));
+//     fake_tree->right->ch = 'b';
 
-    HuffmanTable * table = malloc(sizeof(HuffmanTable));
-    generate_codes(fake_tree, table);
-    print_table(table);
+//     HuffmanTable * table = malloc(sizeof(HuffmanTable));
+//     generate_codes(fake_tree, table);
+//     print_table(table);
 
-    uint8_t compressed_data[] = {0x32, 0x32};
-    decode_stream(fake_tree, compressed_data, 16, stdout);
-    printf("\n\n");
+//     uint8_t compressed_data[] = {0x32, 0x32};
+//     decode_stream(fake_tree, compressed_data, 16, stdout);
+//     printf("\n\n");
 
-    compressed_data[0] = 0xff;
-    decode_stream(fake_tree, compressed_data, 16, stdout);
-    printf("\n\n");
+//     compressed_data[0] = 0xff;
+//     decode_stream(fake_tree, compressed_data, 16, stdout);
+//     printf("\n\n");
 
-    return 0;
-}
+//     return 0;
+// }

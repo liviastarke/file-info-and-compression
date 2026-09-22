@@ -6,13 +6,14 @@ huffman-compression : $(OBJ)
 
 # individual targets for testing modules
 pq        : pq.o
+tree      : tree.o pq.o
 table     : table.o
 bitstream : bitstream.o
 
 # create objects
 main.o      : tree.h pq.h table.h bitstream.h common.h
 table.o     : table.h common.h
-tree.o      : tree.h common.h
+tree.o      : tree.h pq.h common.h
 pq.o        : pq.h common.h
 bitstream.o : bitstream.h common.h
 
