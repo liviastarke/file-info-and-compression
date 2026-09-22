@@ -14,20 +14,20 @@ typedef struct {
 /*
  * Insere um nó na fila de prioridade.
  */
-void pq_push(MinHeap *pq, HuffmanNode *nd) {
+void push(MinHeap *pq, HuffmanNode *nd) {
   int i = pq->size;
 
   pq->node[size] = pq->node;
   pq->size++;
 
-  while() {
+  while() { //???????????
     int pai = ((i - 1) / 2); 
    
     //o que diabos é isso 
     if (pq->node[i]->freq >= pq->node[pai]->freq) {
       return 0;
     }
-
+ 
     HuffmanNode *temp = pq->node[i];
 
     pq->node[i] = pq->node[pai];
@@ -38,8 +38,15 @@ void pq_push(MinHeap *pq, HuffmanNode *nd) {
 }
 
 // Remove e retorna o nó de menor frequência.
-HuffmanNode *pq_pop(MinHeap *pq) {
+/*
+ * A punção pop() remove e retorna o nó de menor frequência acumulada. 
+ */
+HuffmanNode *pop(MinHeap *pq) {
+  //implementar uma fila vazia
   
+
+  
+    
 }
 
 #endif /* PQ_H */   
