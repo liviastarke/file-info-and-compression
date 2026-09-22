@@ -10,64 +10,68 @@ typedef struct {
     int size;
 } MinHeap;
 
+void pq_push(MinHeap *pq, HuffmanNode *nd);
+HuffmanNode *pq_pop(MinHeap *pq);
 
-/*
- * Insere um nó na fila de prioridade.
- */
-void push(MinHeap *pq, HuffmanNode *nd) {
-  int i = pq->size;
+// /*
+//  * Insere um nó na fila de prioridade.
+//  */
+// void push(MinHeap *pq, HuffmanNode *nd) {
+//   int i = pq->size;
+//   int pai = ((i - 1) / 2);
 
-  pq->node[size] = pq->node;
-  pq->size++;
+//   pq->node[pq->size] = pq->node;
+//   pq->size++;
 
-  while() { //???????????
-    int pai = ((i - 1) / 2); 
+//   while(pq->node[i]->freq >= pq->node[pai]->freq) {
+//     pai = ((i - 1) / 2); 
    
-    //o que diabos é isso 
-    if (pq->node[i]->freq >= pq->node[pai]->freq) {
-      return 0;
-    }
+//     // //o que diabos é isso 
+//     // if (pq->node[i]->freq >= pq->node[pai]->freq) {
+//     //   return 0;
+//     // }
  
-    HuffmanNode *temp = pq->node[i];
+//     HuffmanNode *temp = pq->node[i];
 
-    pq->node[i] = pq->node[pai];
-    node[pai] = temp;
+//     pq->node[i] = pq->node[pai];
+//     pq->node[pai] = temp;
 
-    i = pai;
-  }
-}
+//     i = pai;
+//   }
+// }
 
-// Remove e retorna o nó de menor frequência.
-/*
- * A punção pop() remove e retorna o nó de menor frequência acumulada. 
- */
-HuffmanNode *pop(MinHeap *pq) {
+// // Remove e retorna o nó de menor frequência.
+// /*
+//  * A punção pop() remove e retorna o nó de menor frequência acumulada. 
+//  */
+// HuffmanNode *pop(MinHeap *pq) {
 
-  //no com menor frequência (aparentemente)
-  HuffmanNode *min = pq->node[0];
+//   //no com menor frequência (aparentemente)
+//   HuffmanNode *min = pq->node[0];
 
-  size--;
-  node[0] = node[size];
+//   pq->size--;
+//   pq->node[0] = pq->node[pq->size];
 
-  int node_down = 0;
+//   int node_down = 0;
 
-  while (2 * node_down + 1 pq->size) {
-    int esq = 2 * node_down + 1;
-    int dir = 2 * node_down + 2;
+//   while (2 * node_down + 1 < pq->size) {
+//     int esq = 2 * node_down + 1;
+//     int dir = 2 * node_down + 2;
     
-    int menor = esq;
-  }
+//     int menor = esq;
+//   }
 
-  //se já está no lugar certo:
-  if ((pq->node[node_down]->freq) <= (pq->node[menor]->freq)) {
-    return break;
-  }
+//   //se já está no lugar certo:
+//   if ((pq->node[node_down]->freq) <= (pq->node[menor]->freq)) {
+//     return;
+//   }
 
-  HuffmanNode *temp = pq->node[node_down];
-  pq->node[node_down] = pq->node[menor];
-  pq->node[menor] = temp;
+//   HuffmanNode *temp = pq->node[node_down];
+//   pq->node[node_down] = pq->node[menor];
+//   pq->node[menor] = temp;
 
-  pos = menor;
-}
+//   // pos = menor;
+//   return menor;
+// }
 
 #endif /* PQ_H */   
