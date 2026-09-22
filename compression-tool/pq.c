@@ -9,7 +9,7 @@
  * @brief Insere um nó na fila de prioridade (Min-Heap)
  */
 void pq_push(MinHeap *pq, HuffmanNode *nd) {
-    pq->nodes[pq->size] = nd;
+    pq->node[pq->size] = nd;
     pq->size++;  
 
     // Guarda a posição do novo nó
@@ -18,19 +18,19 @@ void pq_push(MinHeap *pq, HuffmanNode *nd) {
     while (i > 0) { 
 
         // Calcula o índice do nó pai
-        int parent = (i - 1) / 2;
+        int pai = (i - 1) / 2;
 
         // Se o pai tiver frequência menor ou igual,
-        if (pq->nodes[parent]->freq <= pq->nodes[i]->freq) {
+        if (pq->node[pai]->freq <= pq->node[i]->freq) {
             break;
         }
 
         // Troca o nó atual com o nó pai
-        HuffmanNode *temp = pq->nodes[parent];
-        pq->nodes[parent] = pq->nodes[i];
-        pq->nodes[i] = temp;
+        HuffmanNode *temp = pq->node[pai];
+        pq->node[pai] = pq->node[i];
+        pq->node[i] = temp;
 
         // o nó agora está na posição do antigo pai
-        i = parent;
+        i = pai;
     }
 }

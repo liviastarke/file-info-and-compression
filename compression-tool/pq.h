@@ -42,11 +42,32 @@ void push(MinHeap *pq, HuffmanNode *nd) {
  * A punção pop() remove e retorna o nó de menor frequência acumulada. 
  */
 HuffmanNode *pop(MinHeap *pq) {
-  //implementar uma fila vazia
-  
 
-  
+  //no com menor frequência (aparentemente)
+  HuffmanNode *min = pq->node[0];
+
+  size--;
+  node[0] = node[size];
+
+  int node_down = 0;
+
+  while (2 * node_down + 1 pq->size) {
+    int esq = 2 * node_down + 1;
+    int dir = 2 * node_down + 2;
     
+    int menor = esq;
+  }
+
+  //se já está no lugar certo:
+  if ((pq->node[node_down]->freq) <= (pq->node[menor]->freq)) {
+    return break;
+  }
+
+  HuffmanNode *temp = pq->node[node_down];
+  pq->node[node_down] = pq->node[menor];
+  pq->node[menor] = temp;
+
+  pos = menor;
 }
 
 #endif /* PQ_H */   
