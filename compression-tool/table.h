@@ -1,8 +1,8 @@
-#ifndef __TABLE_H__
-#define __TABLE_H__
+#ifndef TABLE_H
+#define TABLE_H
 
 #include "common.h"
-#include<stdio.h>
+#include <stdio.h>
 
 // Huffman Encode
 int generate_codes(const HuffmanNode *root, HuffmanTable *out_table);

@@ -34,3 +34,33 @@ void pq_push(MinHeap *pq, HuffmanNode *nd) {
         i = pai;
     }
 }
+
+HuffmanNode *pq_pop(MinHeap *pq) {
+
+  //no com menor frequência (aparentemente)
+  HuffmanNode *min = pq->node[0];
+
+  pq->size--;
+  pq->node[0] = pq->node[pq->size];
+
+  int node_down = 0;
+
+  while (2 * node_down + 1 < pq->size) {
+    int esq = 2 * node_down + 1;
+    int dir = 2 * node_down + 2;
+    
+    int menor = pq->node[esq] < pq->node[dir] ? esq : dir;
+    //se já está no lugar certo:
+    if ((pq->node[node_down]->freq) <= (pq->node[menor]->freq)) {
+      return min;
+    }
+
+    HuffmanNode *temp = pq->node[node_down];
+    pq->node[node_down] = pq->node[menor];
+    pq->node[menor] = temp;
+
+    node_down = menor;
+  }
+
+  return min;
+}
