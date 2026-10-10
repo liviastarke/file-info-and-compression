@@ -32,7 +32,7 @@ void bw_write_bits(BitWriter *bw, uint32_t bits, uint8_t len) {
 }
 
 
-void count_frequencies(FILE *in, int freqs[256]) { // Conta de 0 a 255
+void count_frequencies(FILE *in, int freqs[ALPHABET_SIZE]) { // Conta de 0 a 255
     for (int i = 0; i < ALPHABET_SIZE; i++) freqs[i] = 0;
     int c;
     while ((c = fgetc(in)) != EOF) {
