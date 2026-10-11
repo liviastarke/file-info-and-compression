@@ -1,6 +1,3 @@
-/**
- * É necessário tirar da pasta para funcionar
- */
 #include <stdio.h>
 #include "tree.h"
 
@@ -8,9 +5,9 @@ int main(void)
 {
     int freqs[ALPHABET_SIZE] = {0};
 
-    freqs['A'] = 5;
-    freqs['B'] = 2;
-    freqs['C'] = 8;
+    for (int i = 0; i < ALPHABET_SIZE; i++) {
+        freqs[i] = 1;
+    }
 
     HuffmanNode *root = build_tree_from_frequencies(freqs);
 
@@ -20,8 +17,6 @@ int main(void)
     }
 
     printf("Frequencia da raiz: %d\n", root->freq);
-    printf("Frequencia do filho esquerdo: %d\n", root->left->freq);
-    printf("Frequencia do filho direito: %d\n", root->right->freq);
 
     free_tree(root);
     return 0;
