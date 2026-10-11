@@ -17,4 +17,8 @@ LZ (in progress).
 
 If you are willing to explore file headers and metadata or practice C, you can make your own changes and help expand 
 this code's functionality.
+<<<<<<< Updated upstream
 
+=======
+  * [x] 
+>>>>>>> Stashed changes
