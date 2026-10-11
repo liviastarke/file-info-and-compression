@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-HuffmanNode * create_leaf(unsigned char ch, int freq){
+HuffmanNode * create_leaf(unsigned char ch, uint64_t freq){
 	HuffmanNode * new_leaf = malloc(sizeof(HuffmanNode));
 	check_pointer(new_leaf);
 	new_leaf->left = new_leaf->right = NULL;
@@ -25,7 +25,7 @@ HuffmanNode * node_merge(HuffmanNode * left, HuffmanNode * right){
 	return new_parent;
 }
 
-HuffmanNode * build_tree_from_frequencies(const int freqs[ALPHABET_SIZE]){
+HuffmanNode * build_tree_from_frequencies(const uint64_t freqs[ALPHABET_SIZE]){
 	if (freqs == NULL){
 		printf("Couldn't build tree: NULL frequencies array.\n");
 		return NULL;
@@ -36,7 +36,8 @@ HuffmanNode * build_tree_from_frequencies(const int freqs[ALPHABET_SIZE]){
 	nodes->size = 0;
 	for (int i = 0; i < ALPHABET_SIZE; i++){
 		if (freqs[i] > 0){
-			pq_push(nodes, create_leaf(i, freqs[i]));
+			// pq_push(nodes, create_leaf(i, freqs[i]));
+			pq_push(nodes, create_leaf((unsigned char) i, freqs[i]));
 		}
 	}
 

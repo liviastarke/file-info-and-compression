@@ -18,6 +18,6 @@ void bw_init(BitWriter *bw, FILE *f);
 void bw_write_bit(BitWriter *bw, int bit); // chamando a função se é 0 ou 1
 void bw_flush(BitWriter *bw); 
 void bw_write_bits(BitWriter *bw, uint32_t bits, uint8_t len); // verificando agora mais bits!
-void count_frequencies(FILE *in, int freqs[ALPHABET_SIZE]); //  frequência de caracteres do arquivo de entrada
+void count_frequencies(FILE *in, uint64_t freqs[ALPHABET_SIZE]); //  frequência de caracteres do arquivo de entrada
 
 #endif
