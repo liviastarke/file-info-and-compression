@@ -68,23 +68,23 @@ void free_tree(HuffmanNode * root){
 		free_tree(root->right);
 	}
 	if (root->left){
-                free_tree(root->left);
-        }
+    free_tree(root->left);
+  }
 	if (root){
 		free(root);
-	}
+  }
 }
 
 // roubei do Bruno
 void print_tree(HuffmanNode * root, int depth){
-    if (root == NULL)
-        return;
+  if (root == NULL)
+    return;
 
-    print_tree(root->right, depth + 1);
+  print_tree(root->right, depth + 1);
 
-    for(int i = 0; i < depth; i++){
+  for(int i = 0; i < depth; i++){
         printf("\t");
-    }
+  }
 
 	if (root->ch == 0){
 		printf("\ufffd\n");
@@ -109,3 +109,5 @@ void print_tree(HuffmanNode * root, int depth){
 // 	print_tree(tree, 0);
 // 	return 0;
 // }
+//
+//
