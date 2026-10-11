@@ -12,15 +12,10 @@ in a string of zeros and ones. It is not supposed to actually write a compressed
 that. It was never supposed to be "scalable" (nor modified in any way). I wrote it as an in-class exercise. So I 
 decided it would be easier to write a new program from scratch.
 
-In *compression-tool* we (3 contributors) are developing a command line file compression tool, based on the huffman algorithm and 
-LZ (in progress). Read *compression-tool/README.md* for details.
+In *compression-tool* we (3 contributors) are developing a command line file compression tool, based on the huffman 
+algorithm and LZ (in progress). Read *compression-tool/README.md* for details.
 
 ## Contribute!
 
-If you are willing to explore file headers and metadata or practice C, you can make your own changes and help expand 
-this code's functionality.
-<<<<<<< Updated upstream
-
-=======
-  * [x] 
->>>>>>> Stashed changes
+If you are willing to explore file headers and metadata, dive into compression algorithms or just practice C, you 
+can make your own changes and help expand this code's functionality. Feel free to open issues and pull requests.
