@@ -63,20 +63,18 @@ HuffmanNode * build_tree_from_frequencies(const int freqs[ALPHABET_SIZE]){
 	return parent; // the root of all the tree
 }
 
-/**
- * Parte a ser corrigida
- */
-void free_tree(HuffmanNode * root){
-	if (root->right){
-		free_tree(root->right);
-	}
-	if (root->left){
+// SE root == NULL ENTAO funcao_termina
+void free_tree(HuffmanNode *root) {
+    if (root == NULL) {
+        return;
+    }
+
     free_tree(root->left);
-  }
-	if (root){
-		free(root);
-  }
+    free_tree(root->right);
+
+    free(root);
 }
+
 
 // roubei do Bruno
 void print_tree(HuffmanNode * root, int depth){
