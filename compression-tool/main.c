@@ -34,7 +34,13 @@ int main(int argc, char **argv){
 	
 	// TABLE.H
 	HuffmanTable table;
-	generate_codes(root, &table);
+
+	// Verifica o retorno de 'generate_codes' e encerra o programa após liberar os recursos em caso de falha
+	if (generate_codes(root, &table) != EXIT_SUCCESS) {
+    	free_tree(root);
+    	fclose(in_file);
+    	return EXIT_FAILURE;
+	}	
 
 	// TODO: create out_file based on in_file path
 	FILE * out_file = fopen("test_out_file", "w");

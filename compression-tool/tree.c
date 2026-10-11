@@ -42,6 +42,7 @@ HuffmanNode * build_tree_from_frequencies(const int freqs[ALPHABET_SIZE]){
 
 	// empty file, 0 frequencies for all symbols
 	if (nodes->size == 0){
+		free(nodes);
 		return NULL;
 	}
 
