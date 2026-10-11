@@ -47,7 +47,8 @@ int generate_codes(const HuffmanNode * root, HuffmanTable * out_table){
         return EXIT_FAILURE;
     }
 
-    memset(out_table, 0, sizeof(HuffmanTable));
+    // Should we initialise table with zero to prevent interpreting random memory content as codes?
+    // memset(out_table, 0, sizeof(HuffmanTable));
 
     // else if single node tree
     if (root->left == NULL && root->right == NULL){
@@ -103,6 +104,57 @@ int decode_stream(const HuffmanNode * root, const uint8_t *bits, size_t bit_len,
             current_node = root;
         }
     }
+}
+
+int decode_file(const HuffmanNode * root, FILE * in_file, size_t num_bits, FILE * out){
+
+    // exit if empty tree
+    if (root == NULL){
+        printf("Couldn't decode: Huffman tree was empty.\n");
+        return EXIT_FAILURE;
+    }
+
+    // exit if no bits to decode
+    if (in_file == NULL){
+        printf("Couldn't decode: No bit sequence to decode.\n");
+        return EXIT_FAILURE;
+    }
+
+    // exit if empty file
+    if (num_bits == 0){
+        printf("Couldn't decode: length zero bit sequence.\n");
+        return EXIT_FAILURE;
+    }
+
+    // Special single node tree case
+    if (root->left == NULL && root->right == NULL){
+        for (size_t i = 0; i < num_bits; i++){
+            fputc(root->ch, out);
+        }
+        return EXIT_SUCCESS;
+    }
+
+    const HuffmanNode * current_node = root;
+    size_t num_bytes = (num_bits + 7) / 8;
+    int byte;
+
+    for (size_t i = 0; i < num_bytes && (byte = fgetc(in_file)) != EOF; i++){
+        for (int j = 7; j >= 0 && (((8*i)+(7-j)) < num_bits); j--){
+
+            if (byte >> j & 1){
+                current_node = current_node->right;
+            }
+            else{
+                current_node = current_node->left;
+            }
+
+            if (current_node->left == NULL && current_node->right == NULL){
+                fputc(current_node->ch, out);
+                current_node = root;
+            }
+        }
+    }
+    return EXIT_SUCCESS;
 }
 
 // int main(){

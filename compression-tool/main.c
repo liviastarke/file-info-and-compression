@@ -46,14 +46,36 @@ int main(int argc, char **argv){
 	// Rewind in_file
 	fseek(in_file, 0L, SEEK_SET);
 	// read chars from in_file and encode according to table
-	char c;
+	int c;
 	while ((c = fgetc(in_file)) != EOF) {
-		// look up current char in table and write with bw_write_bits
-		bw_write_bits(&bw, table.table[c].bits, table.table[c].len);
+		// look up current char in table
+		Code code = table.table[(unsigned char) c];
+		// write with bw_write_bits
+		bw_write_bits(&bw, code.bits, code.len);
 	}
 	bw_flush(&bw);
+
+	// in_file no longer necessary, close
 	fclose(in_file);
 	fclose(out_file);
+
+	// Assess valid encoding by decoding
+	// Open a file to write and reopen out_file in read mode
+	FILE * reconstruct_file = fopen("test_reconstruct_in_file", "w");
+	check_pointer(reconstruct_file);
+	FILE * compressed_file = fopen("test_out_file", "r");
+	check_pointer(compressed_file);
+
+	fseek(compressed_file, 0L, SEEK_END);
+	size_t file_len_bytes = ftell(compressed_file);
+	fseek(compressed_file, 0L, SEEK_SET);
+	decode_file(root, compressed_file, file_len_bytes*8, reconstruct_file);
+
+	fclose(reconstruct_file);
+
+	
+	// out_file no longer necessary, close
+	fclose(compressed_file);
 	
 	free_tree(root);
 }

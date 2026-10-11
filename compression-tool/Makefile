@@ -19,6 +19,6 @@ bitstream.o : bitstream.h common.h
 
 # clean compilation and objects
 clean :
-	rm huffman-compression pq table bitstream $(OBJ)
+	rm huffman-compression tree pq table bitstream $(OBJ)
 
 
