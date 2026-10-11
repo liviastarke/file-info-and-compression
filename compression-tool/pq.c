@@ -44,6 +44,11 @@ void pq_push(MinHeap *pq, HuffmanNode *nd) {
  */
 HuffmanNode *pq_pop(MinHeap *pq) {
 
+  //evita acesso inválido na memória quando a fila estiver vazia
+  if (pq == NULL || pq->size == 0) {
+    return NULL;
+  }
+
   //no com menor frequência (aparentemente)
   HuffmanNode *min = pq->node[0];
 
