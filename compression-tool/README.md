@@ -12,22 +12,29 @@ Modular implementation divided in:
 
 - table: handles huffman encoding and decoding by constructing a table relating characters and their huffman codes. *Depends on: tree.*
 
+- LZ encoder: *To be implemented*
+
+- main file: makes good use of the functions from the modules, integrating them in a single not-so-readable file compression program. *Depends on: all modules.*
+
+
 ## To do:
 
-- [x] Integration of the modules in *main.c*.
+Priorities:
 
-- [x] Finish character encoding in *main.c* by accessing the table and calling bw\_write\_bits.
+- [ ] Implement file compression/decompression option (use arguments or file extension to decide on compression or decompression).
+
+- [ ] Decide on internal structure of compressed file, header size and information, etc, in order to be able to reconstruct the huffman tree from the compressed file.
+
+Unsatisfied requirements:
+
+- [ ] LZ-like dictionary-based encoding before huffman compression as a separate module.
+
+Improvements:
 
 - [ ] Improve file handling:
 
     - [ ] Verify input file's path and ensure safe file operations.
 
     - [ ] Open/Create output file with a path similar to the input file.
-
-    - [ ] Decide on internal structure of compressed file, header size and information, etc.
-
-- [ ] Implement file decompression (use arguments or file extension to decide on compression or decompression).
-
-- [ ] LZ-like dictionary-based encoding before huffman compression.
 
 
