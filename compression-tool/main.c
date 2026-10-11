@@ -35,19 +35,25 @@ int main(int argc, char **argv){
 	// TABLE.H
 	HuffmanTable table;
 	generate_codes(root, &table);
+
+	// TODO: create out_file based on in_file path
+	FILE * out_file = fopen("test_out_file", "w");
+	check_pointer(out_file);
 	
 	// BITSTREAM.H
 	BitWriter bw;
-	bw_init(&bw, out_file); // TODO: open out_file
+	bw_init(&bw, out_file);
 	// Rewind in_file
 	fseek(in_file, 0L, SEEK_SET);
 	// read chars from in_file and encode according to table
 	char c;
 	while ((c = fgetc(in_file)) != EOF) {
-		// look up each char in table.table[c], call bw_write_bits()
-		bw_write_bits(bw, upto4bytes, nobytes);
+		// look up current char in table and write with bw_write_bits
+		bw_write_bits(&bw, table.table[c].bits, table.table[c].len);
 	}
 	bw_flush(&bw);
+	fclose(in_file);
+	fclose(out_file);
 	
 	free_tree(root);
 }

@@ -96,16 +96,16 @@ void print_tree(HuffmanNode * root, int depth){
     print_tree(root->left, depth + 1);
 }
 
-int main(){
-	int mock_freqs[ALPHABET_SIZE] = {0};
-    mock_freqs['A'] = 5; // 41
-    mock_freqs['B'] = 9;
-    mock_freqs['C'] = 12;
-    mock_freqs['D'] = 13;
-    mock_freqs['E'] = 16;
-    mock_freqs['F'] = 45;
+// int main(){
+// 	int mock_freqs[ALPHABET_SIZE] = {0};
+//     mock_freqs['A'] = 5; // 41
+//     mock_freqs['B'] = 9;
+//     mock_freqs['C'] = 12;
+//     mock_freqs['D'] = 13;
+//     mock_freqs['E'] = 16;
+//     mock_freqs['F'] = 45;
 
-	HuffmanNode * tree = build_tree_from_frequencies(mock_freqs);
-	print_tree(tree, 0);
-	return 0;
-}
+// 	HuffmanNode * tree = build_tree_from_frequencies(mock_freqs);
+// 	print_tree(tree, 0);
+// 	return 0;
+// }

@@ -1,13 +1,12 @@
-#ifndef __CHECK_POINTER_H__
-#define __CHECK_POINTER_H__
+#ifndef CHECK_POINTER_H
+#define CHECK_POINTER_H
 
 #include <stdio.h>
 #include <stdlib.h>
 
-int check_pointer(void * ptr){
+static inline int check_pointer(void * ptr){
 	if (!ptr){
-		printf("Allocation error!\n");
-		perror(NULL);
+		perror("Null pointer");
 		exit(EXIT_FAILURE);
 	}
 	return 0;

@@ -1,7 +1,8 @@
 #include "table.h"
 
-#include<stdio.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 void print_code(Code * code){
     for (int i = 0; i < code->len; i++){
@@ -45,6 +46,8 @@ int generate_codes(const HuffmanNode * root, HuffmanTable * out_table){
         printf("Couldn't generate codes: Huffman tree was empty.\n");
         return EXIT_FAILURE;
     }
+
+    memset(out_table, 0, sizeof(HuffmanTable));
 
     // else if single node tree
     if (root->left == NULL && root->right == NULL){

@@ -14,15 +14,19 @@ Modular implementation divided in:
 
 ## To do:
 
-- [ ] Integration of the modules in *main.c*.
+- [x] Integration of the modules in *main.c*.
 
-    - [ ] Finish character encoding in *main.c* by accessing the table and calling bw\_write\_bits.
+- [x] Finish character encoding in *main.c* by accessing the table and calling bw\_write\_bits.
+
+- [ ] Improve file handling:
 
     - [ ] Verify input file's path and ensure safe file operations.
 
     - [ ] Open/Create output file with a path similar to the input file.
 
     - [ ] Decide on internal structure of compressed file, header size and information, etc.
+
+- [ ] Implement file decompression (use arguments or file extension to decide on compression or decompression).
 
 - [ ] LZ-like dictionary-based encoding before huffman compression.
 
