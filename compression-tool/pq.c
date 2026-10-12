@@ -3,10 +3,14 @@
  * @brief Implementação do Min-Heap para nós Huffman (HuffmanNode)
  */
 
+/**
+ * Objetivo: Implementa pq_push e pq_pop
+ */
+
 #include "pq.h"
 
 /**
- * @brief Insere um nó na fila de prioridade (Min-Heap)
+ * @brief Insere um nó na fila de prioridade (Min-Heap). O nó sobe quando a frequência é menor que o Nó Pai
  */
 void pq_push(MinHeap *pq, HuffmanNode *nd) {
     pq->node[pq->size] = nd;
@@ -35,7 +39,15 @@ void pq_push(MinHeap *pq, HuffmanNode *nd) {
     }
 }
 
+/**
+ * Existe uma implementação a ser modificada
+ */
 HuffmanNode *pq_pop(MinHeap *pq) {
+
+  //evita acesso inválido na memória quando a fila estiver vazia
+  if (pq == NULL || pq->size == 0) {
+    return NULL;
+  }
 
   //no com menor frequência (aparentemente)
   HuffmanNode *min = pq->node[0];
@@ -49,10 +61,17 @@ HuffmanNode *pq_pop(MinHeap *pq) {
     int esq = 2 * node_down + 1;
     int dir = 2 * node_down + 2;
     
-    int menor = pq->node[esq] < pq->node[dir] ? esq : dir;
-    //se já está no lugar certo:
-    if ((pq->node[node_down]->freq) <= (pq->node[menor]->freq)) {
-      return min;
+    int menor = esq;
+
+    //Assume que o nó filho esq. é o menor, verifica se o nó filho dir. existe
+    //SE (nó_filho_dir) < (nó_filho_esq) ENTAO: return (nó_filho_dir)
+    if (dir < pq->size && pq->node[dir]->freq < pq->node[esq]->freq) {
+        menor = dir;
+    }
+    //condição de parada
+    //SE nó_lugar_certo ENTAO encerra_laço (break)
+    if (pq->node[node_down]->freq <= pq->node[menor]->freq) {
+      break; 
     }
 
     HuffmanNode *temp = pq->node[node_down];

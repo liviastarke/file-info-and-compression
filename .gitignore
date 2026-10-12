@@ -1,0 +1,11 @@
+*.txt
+*
+!.gitignore
+!*.md
+!*.c
+!*.h
+!compression-tool/
+!compression-tool/*.md
+!compression-tool/Makefile
+!compression-tool/*.c
+!compression-tool/*.h
