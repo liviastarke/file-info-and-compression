@@ -45,9 +45,6 @@ void pq_push(MinHeap *pq, HuffmanNode *nd) {
     }
 }
 
-/**
- * Existe uma implementação a ser modificada
- */
 HuffmanNode *pq_pop(MinHeap *pq) {
 
   //evita acesso inválido na memória quando a fila estiver vazia

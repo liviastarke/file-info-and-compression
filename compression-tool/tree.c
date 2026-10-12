@@ -62,12 +62,6 @@ HuffmanNode * build_tree_from_frequencies(const uint64_t freqs[ALPHABET_SIZE]){
 		
 		parent = node_merge(left, right);
 		pq_push(nodes, parent);
-		//if (parent == NULL) {
-		//	free_tree(left);
-		//	free_tree(right);
-		//	free_tree(pq_pop(nodes));
-		//	return NULL;
-		//}
 	}
 
 	parent = pq_pop(nodes);
@@ -109,19 +103,3 @@ void print_tree(HuffmanNode * root, int depth){
 
     print_tree(root->left, depth + 1);
 }
-
-// int main(){
-// 	int mock_freqs[ALPHABET_SIZE] = {0};
-//     mock_freqs['A'] = 5; // 41
-//     mock_freqs['B'] = 9;
-//     mock_freqs['C'] = 12;
-//     mock_freqs['D'] = 13;
-//     mock_freqs['E'] = 16;
-//     mock_freqs['F'] = 45;
-
-// 	HuffmanNode * tree = build_tree_from_frequencies(mock_freqs);
-// 	print_tree(tree, 0);
-// 	return 0;
-// }
-//
-//
