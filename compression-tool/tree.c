@@ -16,6 +16,11 @@ HuffmanNode * create_leaf(unsigned char ch, int freq){
 }
 
 HuffmanNode * node_merge(HuffmanNode * left, HuffmanNode * right){
+	//função não tentará acessar left->freq ou right->freq se algum ponteiro for nulo
+	if (left == NULL || right == NULL) {
+    	return NULL;
+	}
+
 	HuffmanNode * new_parent = malloc(sizeof(HuffmanNode));
 	check_pointer(new_parent);
 	new_parent->left = left;
@@ -53,8 +58,15 @@ HuffmanNode * build_tree_from_frequencies(const int freqs[ALPHABET_SIZE]){
 	while (nodes->size >= 2){
 		left = pq_pop(nodes);
 		right = pq_pop(nodes);
+		
 		parent = node_merge(left, right);
 		pq_push(nodes, parent);
+		//if (parent == NULL) {
+		//	free_tree(left);
+		//	free_tree(right);
+		//	free_tree(pq_pop(nodes));
+		//	return NULL;
+		//}
 	}
 
 	parent = pq_pop(nodes);

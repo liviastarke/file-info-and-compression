@@ -13,8 +13,14 @@
  * @brief Insere um nó na fila de prioridade (Min-Heap). O nó sobe quando a frequência é menor que o Nó Pai
  */
 void pq_push(MinHeap *pq, HuffmanNode *nd) {
-    pq->node[pq->size] = nd;
-    pq->size++;  
+  
+  //função não tenta inserir um nó quando a fila ou o nó são inválidos
+  if (pq == NULL || nd == NULL || pq->size >= ALPHABET_SIZE) {
+    return;
+  }
+  
+  pq->node[pq->size] = nd;
+  pq->size++;  
 
     // Guarda a posição do novo nó
     int i = pq->size - 1;
