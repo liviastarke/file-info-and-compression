@@ -1,3 +1,5 @@
+#include "main.h"
+
 #include "common.h"
 
 // Include modules
@@ -27,20 +29,19 @@ int main(int argc, char **argv){
 	check_pointer(in_file);
 
 	// Count char frequencies from file to build Huffman tree
-	int freqs[ALPHABET_SIZE] = {0};
+	uint64_t freqs[ALPHABET_SIZE] = {0};
 	count_frequencies(in_file, freqs); // BITSTREAM.H
 	
 	HuffmanNode *root = build_tree_from_frequencies(freqs); // TREE.H
 	
 	// TABLE.H
-	HuffmanTable table;
-
+	HuffmanTable table = {0};
 	// Verifica o retorno de 'generate_codes' e encerra o programa após liberar os recursos em caso de falha
 	if (generate_codes(root, &table) != EXIT_SUCCESS) {
     	free_tree(root);
     	fclose(in_file);
     	return EXIT_FAILURE;
-	}	
+	}
 
 	// TODO: create out_file based on in_file path
 	FILE * out_file = fopen("test_out_file", "w");
@@ -49,8 +50,12 @@ int main(int argc, char **argv){
 	// BITSTREAM.H
 	BitWriter bw;
 	bw_init(&bw, out_file);
-	// Rewind in_file
+	// rewind in_file
 	fseek(in_file, 0L, SEEK_SET);
+
+	// write file header
+	write_file_header(out_file, freqs);
+
 	// read chars from in_file and encode according to table
 	int c;
 	while ((c = fgetc(in_file)) != EOF) {
@@ -86,3 +91,18 @@ int main(int argc, char **argv){
 	free_tree(root);
 }
 
+void write_file_header(FILE * file, uint64_t freqs[ALPHABET_SIZE]){
+	fprintf(file, "OLIVE");
+	uint8_t num_freqs = 0; // this must be reviewed if alphabet size changes (poor decision, I know)
+	for (int i = 0; i < ALPHABET_SIZE; i++){
+		if (freqs[i] > 0){
+			fputc(i, file);
+			fwrite(&(freqs[i]), sizeof(uint64_t), 1, file);
+			// printf("char: %c; count: %lu\n", i, freqs[i]); // 73 chars for my sample aula5 file would be 0x49
+			num_freqs++;
+		}
+	}
+	fseek(file, 5, SEEK_SET);
+	fwrite(&num_freqs, sizeof(uint8_t), 1, file);
+	fseek(file, num_freqs*(sizeof(uint64_t) + sizeof(char)), SEEK_SET);
+}
