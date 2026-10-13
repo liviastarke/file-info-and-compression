@@ -93,6 +93,8 @@ int main(int argc, char **argv){
 
 void write_file_header(FILE * file, uint64_t freqs[ALPHABET_SIZE]){
 	fprintf(file, "OLIVE");
+	fputc(0,file); //reserva o byte para a quantidade de registros
+	
 	uint8_t num_freqs = 0; // this must be reviewed if alphabet size changes (poor decision, I know)
 	for (int i = 0; i < ALPHABET_SIZE; i++){
 		if (freqs[i] > 0){
@@ -104,5 +106,6 @@ void write_file_header(FILE * file, uint64_t freqs[ALPHABET_SIZE]){
 	}
 	fseek(file, 5, SEEK_SET);
 	fwrite(&num_freqs, sizeof(uint8_t), 1, file);
-	fseek(file, num_freqs*(sizeof(uint64_t) + sizeof(char)), SEEK_SET);
+	fseek(file, 6 + num_freqs * (sizeof(uint64_t) + sizeof(char)), SEEK_SET); //soma os 6 bytes do "cabeçalho" ao tamanho dos registros
+	//fseek(file, num_freqs*(sizeof(uint64_t) + sizeof(char)), SEEK_SET);
 }
