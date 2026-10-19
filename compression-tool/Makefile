@@ -1,4 +1,4 @@
-OBJ = main.o tree.o pq.o table.o bitstream.o
+OBJ = main.o tree.o pq.o table.o bitstream.o header_io.o
 CFLAGS = -g
 
 huffman-compression : $(OBJ)
@@ -17,11 +17,12 @@ bitstream : bitstream.o
 
 # create objects
 # reference https://www.gnu.org/software/make/manual/make.html#make-Deduces
-main.o      : tree.h pq.h table.h bitstream.h common.h check_pointer.h
+main.o      : tree.h pq.h table.h bitstream.h header_io.h common.h check_pointer.h
 table.o     : table.h common.h
 tree.o      : tree.h pq.h common.h check_pointer.h
 pq.o        : pq.h common.h
 bitstream.o : bitstream.h common.h
+header_io.o : header_io.h common.h
 
 # clean compilation and objects
 clean:

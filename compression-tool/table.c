@@ -59,6 +59,9 @@ int generate_codes(const HuffmanNode * root, HuffmanTable * out_table){
     return huffman_encode(root, 0, 0, out_table);
 }
 
+/**
+ * This function is not used. This is a file compression tool with no intentions of decoding streams.
+ */
 int decode_stream(const HuffmanNode * root, const uint8_t *bits, size_t bit_len, FILE * out){
 
     // exit if empty tree
@@ -106,7 +109,7 @@ int decode_stream(const HuffmanNode * root, const uint8_t *bits, size_t bit_len,
     }
 }
 
-int decode_file(const HuffmanNode * root, FILE * in_file, size_t num_bits, FILE * out){
+int decode_file(const HuffmanNode * root, FILE * in_file, uint64_t num_symbols, FILE * out){
 
     // exit if empty tree
     if (root == NULL){
@@ -120,28 +123,27 @@ int decode_file(const HuffmanNode * root, FILE * in_file, size_t num_bits, FILE 
         return EXIT_FAILURE;
     }
 
-    // exit if empty file
-    if (num_bits == 0){
-        printf("Couldn't decode: length zero bit sequence.\n");
+    // exit if no symbols to decode
+    if (num_symbols == 0){
+        printf("Couldn't decode: specified 0 symbols to decode.\n");
         return EXIT_FAILURE;
     }
 
     // Special single node tree case
     if (root->left == NULL && root->right == NULL){
-        for (size_t i = 0; i < num_bits; i++){
+        for (size_t i = 0; i < num_symbols; i++){
             fputc(root->ch, out);
         }
         return EXIT_SUCCESS;
     }
 
     const HuffmanNode * current_node = root;
-    size_t num_bytes = (num_bits + 7) / 8;
+    uint64_t decoded_symbols = 0;
     int byte;
 
-    for (size_t i = 0; i < num_bytes && (byte = fgetc(in_file)) != EOF; i++){
-        for (int j = 7; j >= 0 && (((8*i)+(7-j)) < num_bits); j--){
-
-            if (byte >> j & 1){
+    while(decoded_symbols < num_symbols && (byte = fgetc(in_file)) != EOF){
+        for (int i = 7; i >= 0; i--){
+            if (byte >> i & 1){
                 current_node = current_node->right;
             }
             else{
@@ -151,10 +153,16 @@ int decode_file(const HuffmanNode * root, FILE * in_file, size_t num_bits, FILE 
             if (current_node->left == NULL && current_node->right == NULL){
                 fputc(current_node->ch, out);
                 current_node = root;
+                decoded_symbols++;
+
+                if (decoded_symbols == num_symbols){
+                    return EXIT_SUCCESS;
+                }
             }
         }
     }
-    return EXIT_SUCCESS;
+    printf("Decode failed: EOF was reached unexpectedly.\n");
+    return EXIT_FAILURE;
 }
 
 // int main(){

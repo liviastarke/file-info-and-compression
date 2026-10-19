@@ -31,18 +31,6 @@ void bw_write_bits(BitWriter *bw, uint32_t bits, uint8_t len) {
     }
 }
 
-
-void count_frequencies(FILE *in, uint64_t freqs[ALPHABET_SIZE]) {
-    // Conta de 0 a 255, zerando os valores iniciais
-    for (int i = 0; i < ALPHABET_SIZE; i++) freqs[i] = 0;
-    int c;
-    while ((c = fgetc(in)) != EOF) {
-        freqs[ (unsigned char) c ]++;
-    }
-
-    fseek(in, 0L, SEEK_SET);
-}
-
 void bw_flush (BitWriter *bw) { // Grava o último byte incompleto (se sobrou algum bit), completando com zeros!!!
     
     if (bw->bit_count >0){ // sobrou um byte incompleto 
