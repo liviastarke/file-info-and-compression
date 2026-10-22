@@ -58,7 +58,40 @@ static size_t find_match(const uint8_t *in, size_t in_len,size_t pos, size_t *be
 
 int lz77_compress(const uint8_t *in, size_t in_len, uint8_t **out, size_t *out_len) {
 
+	if (in == NULL || out == NULL || out_len == NULL) //se não me deram o endereço dos dados OU não me deram onde entregar o resultado OU não me deram onde anotar o tamanho, eu paro e retorno erro.
+		return EXIT_FAILURE; // por exemplo aonde estão os dados? aonde eu devo colocar os dados? aonde eu devo anotar o tamanho dos dados?
+	if (in_len > UINT32_MAX) // se o tamanho dos dados for maior que o maior número que cabe em 4 bytes...
+		return EXIT_FAILURE;
 
+	size_t max_out = 4 + in_len + (in_len + 7) / 8;
+	uint8_t *buf = malloc(max_out);
+	if (buf == NULL) 
+		return EXIT_FAILURE;
+
+	buf[0] = (in_len >> 24) & 0xFF;
+	buf[1] = (in_len >> 16) & 0xFF;
+	buf[2] = (in_len >> 8) & 0xFF;
+	buf[3] = in_len & 0xFF;
+
+	size_t out_pos = 4;        // próxima posição livre na saída 
+	size_t pos = 0;            // qual byte estamos processando
+	size_t flag_pos = 0;       // posição, na saída, onde fica o byte de flags do grupo atual
+	uint8_t flags = 0;         // byte de flags sendo montado
+	int n_grupo = 0;           // quantos tokens já entraram no grupo atual, de 0 a 8
+	// tokens são as decições do compressor, quantos caracteres vão ser repetidos, andados...
+
+
+	while (pos < in_len) // Enquanto a posição atual for menor que o tamanho dos dados
+	{
+		if (n_grupo == 0)
+		{
+			flag_pos = out_pos++;
+			flags = 0;
+		}
+
+		size_t offset;
+		size_t len = find_match(in, in_len, pos, &offset); //Chama a find_match na posição atual...
+	
 }
 
 int lz77_decompress(const uint8_t *in, size_t in_len, uint8_t **out, size_t *out_len) {
