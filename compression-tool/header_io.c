@@ -24,8 +24,8 @@ void write_file_header(FILE * file, uint64_t freqs[ALPHABET_SIZE], uint64_t num_
 	for (int i = 0; i < ALPHABET_SIZE; i++){
 		if (freqs[i] > 0){
 			fputc(i, file);
-			fwrite(&(freqs[i]), sizeof(uint64_t), 1, file);
-			// printf("char: %c; count: %lu\n", i, freqs[i]); // 73 chars for my sample aula5 file would be 0x49
+			fwriterite(&(freqs[i]), sizeof(uint64_t), 1, file);
+			//printf("char: %c; count: %lu\n", i, freqs[i]); // 73 chars for my sample aula5 file would be 0x49
 			num_freqs++;
 		}
 	}
