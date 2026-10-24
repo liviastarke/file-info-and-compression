@@ -1,4 +1,4 @@
-OBJ = main.o tree.o pq.o table.o bitstream.o header_io.o
+OBJ = main.o tree.o pq.o table.o bitstream.o header_io.o lz77/lz77.o
 CFLAGS = -g
 
 huffman-compression : $(OBJ)
@@ -23,6 +23,7 @@ tree.o      : tree.h pq.h common.h check_pointer.h
 pq.o        : pq.h common.h
 bitstream.o : bitstream.h common.h
 header_io.o : header_io.h common.h
+lz77/lz77.o : lz77/lz77.h
 
 # clean compilation and objects
 clean:
