@@ -74,7 +74,154 @@ int lz77_compress(const uint8_t *in, size_t in_len, uint8_t **out, size_t *out_l
 	int n_grupo = 0;           // quantos tokens já entraram no grupo atual, de 0 a 8
 	// tokens são as decições do compressor, quantos caracteres vão ser repetidos, andados...
 
+	while (pos < in_len) // enquanto ainda houver bytes para processar...
+	{
+		if (n_grupo == 0)
+		{
+			flag_pos = out_pos++;
+			flags = 0;
+		}
 
+		size_t offset;
+		size_t len = find_match(in, in_len, pos, &offset);
+		// len recebe o comprimento da maior repetição achada e offset recebe a distância dela.
+
+		if (len >= LZ77_MIN_MATCH) // comprimento da repetição for maior ou igual ao mínimo compensa
+		{
+			// o bit correspondente ao número deste token dentro do grupo
+			flags |= (uint8_t)(1 << n_grupo); // |= liga o bit deste token sem apagar os outros bits já ligados
+
+			// monto um número de 16 bits com o offset nos 12 bits de cima e o comprimento menos 3 nos 4 de baixo
+			uint16_t ref = (uint16_t)((offset << LZ77_LENGTH_BITS) | (len - LZ77_MIN_MATCH));
+			buf[out_pos++] = ref >> 8;     // byte alto
+			buf[out_pos++] = ref & 0xFF;   // byte baixo
+			pos += len;
+		} // | vai juntar...
+		else // senão, no caso menor que 3...
+		{
+			// copio o byte atual da entrada para a próxima posição livre da saída...
+			buf[out_pos++] = in[pos];
+			pos++;
+		}
+
+		n_grupo++; // mais um token entrou no grupo atual...
+
+		// grupo cheio (8 tokens)!
+		if (n_grupo == 8)
+		{
+			buf[flag_pos] = flags; 
+			n_grupo = 0;  // próximo ref começa um grupo novo
+		}
+	}
+
+	// sobrou um grupo incompleto...
+	if (n_grupo > 0)
+	{
+		buf[flag_pos] = flags; // grava as flags dele também
+	}
+
+	*out = buf; 
+	*out_len = out_pos; 
+	return EXIT_SUCCESS;
+
+}
+
+
+int lz77_decompress(const uint8_t *in, size_t in_len, uint8_t **out, size_t *out_len) {
+	// mas aqui tem que garantir que o dado existe
+	// validação padrão como na compressão
+	if (in == NULL || out == NULL || out_len == NULL)
+		return EXIT_FAILURE;
+	if (in_len < 4) // diferença que tem que ter pelo menos 4 bytes para ler o cabeçalho
+		return EXIT_FAILURE;
+
+	// aqui o descompressor tem os 4 pedaços e precisa colá-los de volta no número original
+	size_t orig_len = ((size_t)in[0] << 24) | ((size_t)in[1] << 16)
+	                  | ((size_t)in[2] << 8)  |  (size_t)in[3];
+
+	*out = NULL; // se der erro, o chamador não fica com um endereço lixo
+	*out_len = 0;
+	size_t alloc_len;
+
+	if (orig_len == 0) { // se o tamanho orginal estiver zerada
+		alloc_len = 1;  // acrescenta 1 byte
+
+	} else {
+		alloc_len = orig_len; 
+
+	}
+
+	uint8_t *buf = malloc(alloc_len); // alocando o valor do buf para o resultado
+
+	if (buf == NULL) // se o malloc falhou, ele é NULL...
+		return EXIT_FAILURE;
+
+	size_t in_pos = 4; 
+	size_t out_pos = 0;  
+
+	// aqui vai começar a ver cada caracter para "reconstruir"
+	while (out_pos < orig_len)
+	{
+		//se a posição de leitura chegou ao fim da entrada e ainda não reconstruímos tudo, o arquivo está cortado erro!!!
+		if (in_pos >= in_len)
+				goto falha; // vou ousar e testar, espero que de certo...
+
+		uint8_t flags = in[in_pos++];
+
+		// agora verificando os 8 tokens para a reconstruir
+		for (int n_grupo = 0; n_grupo < 8 && out_pos < orig_len; n_grupo++)
+		{
+			
+			if ((flags & (1u << n_grupo)) == 0)
+			{
+				if (in_pos >= in_len) // erro de continuação...
+					goto falha;
+
+				buf[out_pos++] = in[in_pos++]; 
+			}
+			else // senão, o bit está ligado É uma referência
+			{
+				if (in_len - in_pos < LZ77_REF_BYTES) // se restam menos de 2 bytes na entrada, não dá para ler a referência: arquivo cortado
+					goto falha;
+					
+				// pego a referência de 16 bits com a próxima posição
+				uint16_t ref = ((uint16_t)in[in_pos] << 8) | (uint16_t)in[in_pos + 1];
+				in_pos += LZ77_REF_BYTES;
+
+				// separa os dois números de dentro da referência
+				size_t offset = ref >> LZ77_LENGTH_BITS; // descarta os 4 bits de baixo (o comprimento) e sobram os 12 de cima (distância)
+				size_t len = (ref & ((1u << LZ77_LENGTH_BITS) - 1)) + LZ77_MIN_MATCH; // agora com o valor da referência
+				// o & guarda só os 4 bits de baixo
+				// o + 3 desfaz o "- 3" da compressão
+
+				if (offset == 0 || offset > out_pos) // não dá para voltar além do que já foi escrito...
+					goto falha;
+
+				if (len > orig_len - out_pos) // a cópia passaria do tamanho original...
+					goto falha;
+
+				for (size_t k = 0; k < len; k++)
+				{
+					buf[out_pos] = buf[out_pos - offset]; // copia o byte de 'offset' posições atrás
+					out_pos++;
+				}
+			}
+		}
+	}
+
+	*out = buf; // entrega o endereço da saída ao chamador
+	*out_len = out_pos; // e o tamanho real (igual a orig_len)
+	return EXIT_SUCCESS;
+
+falha: // goto goto goto... limpeza única para todos os erros acima, gostei dele...
+	free(buf);
+	return EXIT_FAILURE;
+
+
+}
+
+
+/*
 	while (pos < in_len) {
 		if (n_grupo == 0) {
 			flag_pos = out_pos++;
@@ -193,3 +340,4 @@ int lz77_decompress(const uint8_t *in, size_t in_len, uint8_t **out, size_t *out
     *out_len = out_pos;
     return EXIT_SUCCESS;
 }
+*/
