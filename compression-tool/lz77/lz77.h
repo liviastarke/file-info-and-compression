@@ -7,7 +7,7 @@
 #define LZ77_OFFSET_BITS 12 // bits usados para guardar a distância, quantas casas andar...
 #define LZ77_LENGTH_BITS 4  // bits para guardar o comprimento, o tamanho da frase repetida...
 #define LZ77_MIN_MATCH 3 // tamanho mínimo de repetição, abaixo disso não compensa comprimir, por exemplo 1 ou 2 caracteres
-
+#define LZ77_REF_BYTES 2 // bytes que uma referência ocupa na saída: (OFFSET_BITS + LENGTH_BITS) / 8
 
 
 // tamanho máximo do histórico armazenado na memória (2^12 - 1 = 4095 bytes)
@@ -25,3 +25,4 @@ int lz77_compress(const uint8_t *in, size_t in_len, uint8_t **out, size_t *out_l
 int lz77_decompress(const uint8_t *in, size_t in_len, uint8_t **out, size_t *out_len);
 // se necessário acrescentar mais algumas funções aqui
 #endif
+
