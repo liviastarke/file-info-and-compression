@@ -5,7 +5,6 @@
 // procura a maior sequência de bytes que se repete em uma posição anterior à posição atual
 static size_t find_match(const uint8_t *in, size_t in_len,size_t pos, size_t *best_offset) // daria para encaixar na compressão, mas ficaria enorme...
 {
-
 	size_t longest_match = 0; // guarda o tamanho da maior repetição encontrada até agora
 	*best_offset = 0; // inicialmente, não temos nenhuma distância válida
 	size_t max_retrocesso;
@@ -33,7 +32,6 @@ static size_t find_match(const uint8_t *in, size_t in_len,size_t pos, size_t *be
 		        (comprimento_atual < LZ77_MAX_MATCH)) {
 			comprimento_atual++;
 		}
-
 
 		// se o comprimento atual encontrou uma sequência maior do que a sequência encontrada anteriormente
 		if (comprimento_atual > longest_match) {
@@ -125,7 +123,6 @@ int lz77_compress(const uint8_t *in, size_t in_len, uint8_t **out, size_t *out_l
 	return EXIT_SUCCESS;
 
 }
-
 
 int lz77_decompress(const uint8_t *in, size_t in_len, uint8_t **out, size_t *out_len) {
 	// mas aqui tem que garantir que o dado existe
@@ -220,7 +217,7 @@ falha: // goto goto goto... limpeza única para todos os erros acima, gostei del
 
 }
 
-
+//sabe deus pq isso foi comentado
 /*
 	while (pos < in_len) {
 		if (n_grupo == 0) {
