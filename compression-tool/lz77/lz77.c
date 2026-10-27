@@ -1,6 +1,8 @@
+#define LZ77
 #include "lz77.h"
 #include <stdlib.h>   // malloc, free, EXIT_SUCCESS, EXIT_FAILURE
 #include <string.h>   // memcpy, se precisar
+#include <stdio.h>
 
 // procura a maior sequência de bytes que se repete em uma posição anterior à posição atual
 static size_t find_match(const uint8_t *in, size_t in_len,size_t pos, size_t *best_offset) // daria para encaixar na compressão, mas ficaria enorme...
@@ -216,8 +218,45 @@ falha: // goto goto goto... limpeza única para todos os erros acima, gostei del
 
 
 }
+// main básico 
+#ifdef LZ77
+int main(void)
+{
+	const char *s = "ABRACADABRA_ABRACADABRA";
+	uint8_t *saida = NULL;
+	size_t saida_len = 0;
 
-//sabe deus pq isso foi comentado
+	uint8_t *volta = NULL;
+	size_t volta_len = 0;
+
+	if (lz77_compress((const uint8_t *)s, strlen(s), &saida, &saida_len) == EXIT_SUCCESS)
+	{
+		printf("Comprimido: %zu bytes\n", saida_len);
+		for (size_t i = 0; i < saida_len; i++)
+			printf("%02X ", saida[i]);
+
+		printf("\n");
+
+	}
+
+	if (lz77_decompress(saida, saida_len, &volta, &volta_len) == EXIT_SUCCESS)
+	{
+		if (volta_len == strlen(s) && memcmp(volta, s, volta_len) == 0)
+			printf("Descompressão: descumprida...\n");
+		else
+			printf("ERRO: não foi cumprida\n");
+		free(volta);
+	}
+
+	free(saida);
+	return 0;
+
+
+}
+#endif
+
+
+// não vou apagar pelo esforço da Vitória... mas é bom comparar qual seria mais simples...
 /*
 	while (pos < in_len) {
 		if (n_grupo == 0) {
