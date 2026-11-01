@@ -28,29 +28,33 @@ Make sure to have *make* and a C compiler installed, then, simply run `make` in 
 
 ## Usage
 
-Choose a test file to compress and run:
+Choose a test file to compress and run the following command, substituting <path-to-file> with the path to your file:
 
 ```bash
 ./compression-tool -c <path-to-file>
 ```
 
-To decompress the OLIVE file saved with the name *test_out_file*, run:
+The OLIVE file will be saved with the name *test_out_file.olv*. To decompress, run:
 
 ```bash
-./compression-tool -d test_out_file
+./compression-tool -d test_out_file.olv
 ```
 
-You may check the compressed file with:
+You may check the contents of the compressed file with `xxd`. See "A guide to reading the OLIVE header hexdump" bellow on how to interpret the output:
 
 ```bash
-xxd test_out_file
+xxd test_out_file.olv
 ```
 
-And check decompression with the command:
+You may check if decompression was successful with the `diff` command. After compressing and decompressing a file with the path *files/aula5.md*, for example, you may run:
 
 ```bash
 cat test_reconstruct_in_file
+
+diff -s test_reconstruct_in_file files/aula5.md
 ```
+
+You should see the contents of the file and a message from `diff` reporting that the decompressed file *test_reconstruct_in_file* is identical to the original file *files/aula5.md*.
 
 
 ## To do:

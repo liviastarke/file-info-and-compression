@@ -26,11 +26,11 @@ int main(int argc, char **argv){
 
 	// UNHAPPY PATH: check correct arguments were passed
 	if (argc != 3){
-		printf("HUFFMAN COMPRESSION: use comand + file path to compress a text file\n");
+		printf("OLIVE, a command-line file compression tool.\n\nUsage: ./compression-tool [option] file_path\n  -c\t\tcompress file\n  -d\t\tdecompress file\n\n");
 		exit(EXIT_FAILURE);
 	}
 
-	int fail_flag;
+	int fail_flag = EXIT_SUCCESS;
 
 	// Open file
 	char* path = argv[2];
@@ -51,7 +51,7 @@ int main(int argc, char **argv){
 
 		uint8_t * lz_out = NULL;
 		size_t lz_out_len = 0;
-		fail_flag = lz77_compress(file_buffer, file_size, &lz_out, &lz_out_len); // LZ compress the file
+		fail_flag = fail_flag || lz77_compress(file_buffer, file_size, &lz_out, &lz_out_len); // LZ compress the file
 		// FAILURE
 		if (fail_flag == EXIT_FAILURE){
 			free(lz_out);
@@ -66,31 +66,50 @@ int main(int argc, char **argv){
 
 		/* Huffman encode */
 		// TODO: create out_file based on in_file path
-		FILE * out_file = fopen("test_out_file", "w");
+		FILE * out_file = fopen("test_out_file.olv", "w");
 		check_pointer(out_file);
 
-		fail_flag = compress(lz_out_file, out_file);
+		fail_flag = fail_flag || compress(lz_out_file, out_file);
 		fclose(lz_out_file);
 		fclose(out_file);
-		return fail_flag;
 	}
 	else if (strcmp(argv[1], "-d") == 0){
-		/* Decompression (Huffman decode) */
+		/* Decompression */
 
-		// TODO: create out_file based on in_file path
-		FILE * reconstruct_file = fopen("test_reconstruct_in_file", "w");
-		check_pointer(reconstruct_file);
+		/* Huffman decode */
 
-		fail_flag = decompress(in_file, reconstruct_file);
-		fclose(reconstruct_file);
+		FILE * huffman_out_file = tmpfile();
+		check_pointer(huffman_out_file);
+
+		fail_flag = fail_flag || decompress(in_file, huffman_out_file);
+		fclose(in_file);
+		size_t file_size = ftell(huffman_out_file); // calculate LZ77 compressed text size
+		rewind(huffman_out_file); // rewind to apply LZ77 decompression
+		
+		/* LZ77 */
+		uint8_t * file_buffer = malloc(file_size);
+		fread(file_buffer, file_size, 1, huffman_out_file);
+		fclose(huffman_out_file); // after loading LZ77 compressed/Huffman decompressed text into memory, discard temp file
+
+		uint8_t * lz_out = NULL;
+		size_t lz_out_len = 0;
+		fail_flag = fail_flag || lz77_decompress(file_buffer, file_size, &lz_out, &lz_out_len); // LZ compress the file
+		// FAILURE
+		if (fail_flag == EXIT_FAILURE){
+			free(lz_out);
+			return fail_flag;
+		}
+		
+		FILE * lz_out_file = fopen("test_reconstruct_in_file", "w");
+		check_pointer(lz_out_file);
+		fwrite(lz_out, lz_out_len, 1, lz_out_file); // write LZ decompressed data to out file
+		free(lz_out);
+		fclose(lz_out_file);
 	}
 	else{
 		printf("Failed: Could not parse arguments.\n");
 		fail_flag = EXIT_FAILURE;
 	}
-
-	// in_file no longer necessary, close
-	fclose(in_file);
 
 	return fail_flag;
 }
