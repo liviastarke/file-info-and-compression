@@ -2,11 +2,16 @@
 
 #include "common.h"
 
-// Include modules
+// Include Huffman modules
 #include "pq.h"
 #include "tree.h"
 #include "table.h"
 #include "bitstream.h"
+
+// Include LZ77 module
+#include "lz77/lz77.h"
+
+// Include header module
 #include "header_io.h"
 
 // Include other
@@ -33,14 +38,41 @@ int main(int argc, char **argv){
 	check_pointer(in_file);
 
 	if (strcmp(argv[1], "-c") == 0){
-		/* Compression (Huffman encode) */
+		/* Compression */
 
+		fseek(in_file, 0L, SEEK_END);
+		size_t file_size = ftell(in_file);
+		fseek(in_file, 0L, SEEK_SET);
+
+		/* LZ77 */
+		uint8_t * file_buffer = malloc(file_size); // TODO: Large files will break this. A buffer should be used inside the LZ module instead.
+		fread(file_buffer, file_size, 1, in_file); // load all file into memory
+		fclose(in_file);
+
+		uint8_t * lz_out = NULL;
+		size_t lz_out_len = 0;
+		fail_flag = lz77_compress(file_buffer, file_size, &lz_out, &lz_out_len); // LZ compress the file
+		// FAILURE
+		if (fail_flag == EXIT_FAILURE){
+			free(lz_out);
+			return fail_flag;
+		}
+		
+		FILE * lz_out_file = tmpfile();
+		check_pointer(lz_out_file);
+		fwrite(lz_out, lz_out_len, 1, lz_out_file); // create a temporary file Huffman can operate on
+		free(lz_out);
+		rewind(lz_out_file); // rewind for Huffman
+
+		/* Huffman encode */
 		// TODO: create out_file based on in_file path
 		FILE * out_file = fopen("test_out_file", "w");
 		check_pointer(out_file);
 
-		fail_flag = compress(in_file, out_file);
+		fail_flag = compress(lz_out_file, out_file);
+		fclose(lz_out_file);
 		fclose(out_file);
+		return fail_flag;
 	}
 	else if (strcmp(argv[1], "-d") == 0){
 		/* Decompression (Huffman decode) */

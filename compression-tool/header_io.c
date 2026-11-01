@@ -3,6 +3,7 @@
 #include "common.h"
 
 #include <string.h>
+#include <stdlib.h>
 
 void count_frequencies(FILE *in, uint64_t freqs[ALPHABET_SIZE]) {
     // Conta de 0 a 255, zerando os valores iniciais
@@ -50,6 +51,7 @@ void check_file_signature(FILE *compressed_file) {
 
     if (strncmp(signature, "OLIVE", 5)) {
         printf("Failed: input file signature for decompression does not match.");
+        exit(EXIT_FAILURE);
     }
 }
 

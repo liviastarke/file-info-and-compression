@@ -15,17 +15,49 @@ output file.
 - table: handles Huffman encoding and decoding by constructing a table relating characters and their Huffman 
 codes. *Depends on: tree.*
 
-- LZ encoder: *To be implemented*
+- LZ encoder: LZ77 algorithm implementation in the directory *lz77*.
 
 - main file: makes good use of the functions from the modules, integrating them in a single not-so-readable 
 file compression program. *Depends on: all modules.*
+
+
+## Compile
+
+Make sure to have *make* and a C compiler installed, then, simply run `make` in the project folder.
+
+
+## Usage
+
+Choose a test file to compress and run:
+
+```bash
+./compression-tool -c <path-to-file>
+```
+
+To decompress the OLIVE file saved with the name *test_out_file*, run:
+
+```bash
+./compression-tool -d test_out_file
+```
+
+You may check the compressed file with:
+
+```bash
+xxd test_out_file
+```
+
+And check decompression with the command:
+
+```bash
+cat test_reconstruct_in_file
+```
 
 
 ## To do:
 
 Priorities:
 
-- [ ] Implement file compression/decompression option (use arguments or file extension to decide on compression 
+- [x] Implement file compression/decompression option (use arguments or file extension to decide on compression 
 or decompression).
 
 - [x] Decide on internal structure of compressed file, header size and information, etc, in order to be able to 
@@ -33,11 +65,9 @@ reconstruct the Huffman tree from the compressed file.
 
     - [x] Implement writing the header.
 
-    - [ ] Implement reading the header.
+    - [x] Implement reading the header.
 
-Unsatisfied requirements:
-
-- [ ] LZ-like dictionary-based encoding before Huffman compression as a separate module.
+- [x] LZ-like dictionary-based encoding before Huffman compression as a separate module.
 
 Improvements:
 
@@ -46,6 +76,8 @@ Improvements:
     - [ ] Verify input file's path and ensure safe file operations.
 
     - [ ] Open/Create output file with a path similar to the input file.
+
+- [ ] File header read optimization with file header struct in *header\_io*.
 
 
 ## A guide to reading the OLIVE header hexdump

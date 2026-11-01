@@ -1,4 +1,3 @@
-#define LZ77
 #include "lz77.h"
 #include <stdlib.h>   // malloc, free, EXIT_SUCCESS, EXIT_FAILURE
 #include <string.h>   // memcpy, se precisar
