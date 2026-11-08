@@ -4,6 +4,7 @@
 !*.md
 !*.c
 !*.h
+!compression-tool/*.sh
 !compression-tool/
 !compression-tool/*.md
 !compression-tool/Makefile
