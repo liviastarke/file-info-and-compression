@@ -10,7 +10,8 @@ int huffman_encode(const HuffmanNode * node, uint32_t current_code, uint8_t dept
 
 // Huffman Decode
 int decode_stream(const HuffmanNode * root, const uint8_t * bits, size_t bit_len, FILE * out);
-int decode_file(const HuffmanNode * root, FILE * bits, size_t bit_len, FILE * out);
+int decode_file(const HuffmanNode * root, FILE * in_file, uint64_t num_symbols, FILE * out); 
+//int decode_file(const HuffmanNode * root, FILE * bits, size_t bit_len, FILE * out);
 
 // Auxilary print functions (for debugging)
 void print_table(HuffmanTable * table);
