@@ -34,7 +34,7 @@ int main(int argc, char **argv){
 
 	// Open file
 	char* path = argv[2];
-	FILE * in_file = fopen(path, "r");
+	FILE * in_file = fopen(path, "rb");
 	check_pointer(in_file);
 
 	if (strcmp(argv[1], "-c") == 0){
@@ -45,15 +45,32 @@ int main(int argc, char **argv){
 		fseek(in_file, 0L, SEEK_SET);
 
 		/* LZ77 */
-		uint8_t * file_buffer = malloc(file_size); // TODO: Large files will break this. A buffer should be used inside the LZ module instead.
-		fread(file_buffer, file_size, 1, in_file); // load all file into memory
+		//uint8_t * file_buffer = malloc(file_size); // TODO: Large files will break this. A buffer should be used inside the LZ module instead.
+		//fread(file_buffer, file_size, 1, in_file); // load all file into memory
+		//fclose(in_file);
+		uint8_t *file_buffer = malloc(file_size > 0 ? file_size : 1);
+
+		if (file_buffer == NULL) {
+			fclose(in_file);
+			return EXIT_FAILURE;
+		}
+
+		if (file_size > 0 && fread(file_buffer, 1, file_size, in_file) != file_size) {
+			free(file_buffer);
+			fclose(in_file);
+			return EXIT_FAILURE;
+		}
+
 		fclose(in_file);
 
 		uint8_t * lz_out = NULL;
 		size_t lz_out_len = 0;
-		fail_flag = fail_flag || lz77_compress(file_buffer, file_size, &lz_out, &lz_out_len); // LZ compress the file
+
+		fail_flag = fail_flag || lz77_compress(file_buffer, file_size, &lz_out, &lz_out_len);
+		free(file_buffer); //liberar a memória
+
 		// FAILURE
-		if (fail_flag == EXIT_FAILURE){
+		if (fail_flag == EXIT_FAILURE) {
 			free(lz_out);
 			return fail_flag;
 		}
@@ -66,14 +83,14 @@ int main(int argc, char **argv){
 
 		/* Huffman encode */
 		// TODO: create out_file based on in_file path
-		FILE * out_file = fopen("test_out_file.olv", "w");
+		FILE * out_file = fopen("test_out_file.olv", "wb");
 		check_pointer(out_file);
 
 		fail_flag = fail_flag || compress(lz_out_file, out_file);
 		fclose(lz_out_file);
 		fclose(out_file);
 	}
-	else if (strcmp(argv[1], "-d") == 0){
+	else if (strcmp(argv[1], "-d") == 0) {
 		/* Decompression */
 
 		/* Huffman decode */
@@ -81,19 +98,48 @@ int main(int argc, char **argv){
 		FILE * huffman_out_file = tmpfile();
 		check_pointer(huffman_out_file);
 
-		fail_flag = fail_flag || decompress(in_file, huffman_out_file);
+		if (decompress(in_file, huffman_out_file) != EXIT_SUCCESS) {
+			fclose(in_file);
+			fclose(huffman_out_file);
+			return EXIT_FAILURE;
+		}
+
 		fclose(in_file);
+
 		size_t file_size = ftell(huffman_out_file); // calculate LZ77 compressed text size
 		rewind(huffman_out_file); // rewind to apply LZ77 decompression
 		
 		/* LZ77 */
-		uint8_t * file_buffer = malloc(file_size);
-		fread(file_buffer, file_size, 1, huffman_out_file);
-		fclose(huffman_out_file); // after loading LZ77 compressed/Huffman decompressed text into memory, discard temp file
+		//uint8_t * file_buffer = malloc(file_size);
+		//fread(file_buffer, file_size, 1, huffman_out_file);
+		//fclose(huffman_out_file); // after loading LZ77 compressed/Huffman decompressed text into memory, discard temp file
+		if (file_size < 0) {
+			fclose(huffman_out_file);
+			return EXIT_FAILURE;
+		}
+
+		rewind(huffman_out_file);
+
+		uint8_t *file_buffer = malloc(file_size > 0 ? file_size : 1);
+
+		if (file_buffer == NULL) {
+			fclose(huffman_out_file);
+			return EXIT_FAILURE;
+		}
+
+		if (file_size > 0 &&
+			fread(file_buffer, 1, (size_t)file_size, huffman_out_file) != (size_t)file_size) {
+			free(file_buffer);
+			fclose(huffman_out_file);
+			return EXIT_FAILURE;
+		}
+
+		fclose(huffman_out_file);
 
 		uint8_t * lz_out = NULL;
 		size_t lz_out_len = 0;
 		fail_flag = fail_flag || lz77_decompress(file_buffer, file_size, &lz_out, &lz_out_len); // LZ compress the file
+		free(file_buffer);
 		// FAILURE
 		if (fail_flag == EXIT_FAILURE){
 			free(lz_out);
@@ -102,11 +148,18 @@ int main(int argc, char **argv){
 		
 		FILE * lz_out_file = fopen("test_reconstruct_in_file", "w");
 		check_pointer(lz_out_file);
-		fwrite(lz_out, lz_out_len, 1, lz_out_file); // write LZ decompressed data to out file
+		//fwrite(lz_out, lz_out_len, 1, lz_out_file); // write LZ decompressed data to out file
+		//free(lz_out);
+		//fclose(lz_out_file);
+		if (fwrite(lz_out, 1, lz_out_len, lz_out_file) != lz_out_len) {
+			free(lz_out);
+			fclose(lz_out_file);
+			return EXIT_FAILURE;
+		}
 		free(lz_out);
 		fclose(lz_out_file);
-	}
-	else{
+		
+	}else{
 		printf("Failed: Could not parse arguments.\n");
 		fail_flag = EXIT_FAILURE;
 	}
