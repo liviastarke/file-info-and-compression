@@ -19,6 +19,6 @@ uint64_t get_num_symbols_from_header(FILE * compressed_file);
 void get_frequencies_from_header(FILE * compressed_file, uint64_t freqs[ALPHABET_SIZE]);
 
 // return header size in bytes
-long calc_header_size(uint8_t num_freqs);
+long calc_header_size(uint16_t num_freqs);
 
 #endif
