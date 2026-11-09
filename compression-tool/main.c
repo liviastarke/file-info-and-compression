@@ -162,9 +162,9 @@ int decompress(FILE * compressed_file, FILE * out_file){
 
 	// Count char frequencies from file to build Huffman tree
 	uint64_t freqs[ALPHABET_SIZE] = {0};
-	get_frequencies_from_header(compressed_file, freqs); // MAIN.H
+	get_frequencies_from_header(compressed_file, freqs); // aqui
 	
-	HuffmanNode *root = build_tree_from_frequencies(freqs); // TREE.H
+	HuffmanNode *root = build_tree_from_frequencies(freqs); // ou aqui
 
 	// fseek(compressed_file, calc_header_size(num_freqs), SEEK_SET);
 	// Could do it this way, but it cost me some much time debugging that

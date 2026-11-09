@@ -5,6 +5,7 @@
 !*.c
 !*.h
 !compression-tool/*.sh
+!compression-tool/*.py
 !compression-tool/
 !compression-tool/*.md
 !compression-tool/Makefile

@@ -22,14 +22,14 @@ for file in folder.iterdir():
         lines.append("Time to execute: " + str(execution_time) + " seconds")
 
         # File Size
-        p = subprocess.run(f"du --bytes --apparent-size {shlex.quote(str(file))} | awk '{{print $1}}'", shell=True, capture_output=True, text=True)
-        lines.append("File size: " + p.stdout.strip()) # strip removes blank chars like \n at the end of the output
-        sizes["original"].append(int(p.stdout.strip()))
+        size = os.path.getsize(file)
+        lines.append("File size: " + str(size))
+        sizes["original"].append(size)
 
         # Compressed File Size
-        p = subprocess.run(f"du --bytes --apparent-size test_out_file.olv | awk '{{print $1}}'", shell=True, capture_output=True, text=True)
-        lines.append("Compressed size: " + p.stdout.strip())
-        sizes["compressed"].append(int(p.stdout.strip()))
+        size = os.path.getsize("test_out_file.olv")
+        lines.append("Compressed size: " + str(size))
+        sizes["compressed"].append(size)
 
         # Decompression success and time
         start_time = time.perf_counter() # Record the start time
@@ -55,7 +55,7 @@ plt.scatter(sizes["original"], sizes["compressed"], label="Test files")
 plt.title("File sizes before and after OLIVE compression")
 plt.xlabel("Original file sizes")
 plt.ylabel("Compressed file sizes")
-plt.plot([0, 4000], [0, 4000], color='red', linestyle='dashed', label="Reference line representing no change in file size")
+plt.plot([0, 3000000], [0, 3000000], color='red', linestyle='dashed', label="Reference line representing no change in file size")
 plt.legend()
 plt.show()
 

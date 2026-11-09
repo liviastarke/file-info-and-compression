@@ -19,13 +19,12 @@ void count_frequencies(FILE *in, uint64_t freqs[ALPHABET_SIZE]) {
     fseek(in, 0L, SEEK_SET);
 }
 
-void write_file_header(FILE *file, uint64_t freqs[ALPHABET_SIZE],
-                       uint64_t num_symbols_in_file) {
+void write_file_header(FILE *file, uint64_t freqs[ALPHABET_SIZE], uint64_t num_symbols_in_file) {
     fputs("OLIVE", file); // 5 bytes da assinatura
     fwrite(&num_symbols_in_file, sizeof(uint64_t), 1, file);
-    fputc(0, file); // Reserva o byte para a quantidade de registros
+    fwrite("  ", sizeof(uint16_t), 1, file); // Reserva o byte para a quantidade de registros
 
-    uint8_t num_freqs = 0;
+    uint16_t num_freqs = 0;
 
     for (int i = 0; i < ALPHABET_SIZE; i++) {
         if (freqs[i] > 0) {
@@ -37,7 +36,7 @@ void write_file_header(FILE *file, uint64_t freqs[ALPHABET_SIZE],
 
     // Atualiza a quantidade de registros no cabeçalho
     fseek(file, 5 + sizeof(uint64_t), SEEK_SET);
-    fwrite(&num_freqs, sizeof(uint8_t), 1, file);
+    fwrite(&num_freqs, sizeof(uint16_t), 1, file);
 
     // Posiciona o cursor após o cabeçalho
     fseek(file, calc_header_size(num_freqs), SEEK_SET);
@@ -64,16 +63,13 @@ uint64_t get_num_symbols_from_header(FILE *compressed_file) {
     return num_symbols;
 }
 
-void get_frequencies_from_header(
-    FILE *compressed_file,
-    uint64_t freqs[ALPHABET_SIZE]
-) {
+void get_frequencies_from_header(FILE *compressed_file, uint64_t freqs[ALPHABET_SIZE]) {
     fseek(compressed_file, 5 + sizeof(uint64_t), SEEK_SET);
 
-    uint8_t num_freqs;
-    fread(&num_freqs, sizeof(uint8_t), 1, compressed_file);
+    uint16_t num_freqs;
+    fread(&num_freqs, sizeof(uint16_t), 1, compressed_file);
 
-    for (uint8_t i = 0; i < num_freqs; i++) {
+    for (int i = 0; i < num_freqs; i++) {
         int index = fgetc(compressed_file);
         fread(&freqs[index], sizeof(uint64_t), 1, compressed_file);
     }
@@ -83,10 +79,10 @@ void get_frequencies_from_header(
  * Tamanho do cabeçalho:
  * 5 bytes da assinatura "OLIVE"
  * + 8 bytes para a quantidade de símbolos do arquivo original
- * + 1 byte para a quantidade de registros de frequência
+ * + 2 bytes para a quantidade de registros de frequência
  * + 9 bytes por registro
  */
-long calc_header_size(uint8_t num_freqs) {
-    return 6 + sizeof(uint64_t) +
+long calc_header_size(uint16_t num_freqs) {
+    return 5 + sizeof(uint64_t) + sizeof(uint16_t) +
            (num_freqs * (sizeof(uint64_t) + sizeof(unsigned char)));
 }
