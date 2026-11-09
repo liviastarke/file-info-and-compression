@@ -3,7 +3,10 @@ import subprocess
 from pathlib import Path
 import shlex
 import time
+
+import pandas as pd
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 folder = Path("./test-files") # substitute by your directory path
 
@@ -51,13 +54,43 @@ with open("test_report.txt", mode='w') as output:
 # diff -s "$file" "test_reconstruct_in_file"
 
 
+df = pd.DataFrame.from_dict(sizes)
+df["compressionRate"] = df["original"] / df["compressed"]
+df["percentReduction"] = (df["original"] - df["compressed"]) / df["original"]
+df["bitsPerChar"] = df["compressed"] / df["original"]
+
+plt.figure(figsize=(8, 8))
+
+plt.subplot(2, 2, 1)
 plt.scatter(sizes["original"], sizes["compressed"], label="Test files")
 plt.title("File sizes before and after OLIVE compression")
 plt.xlabel("Original file sizes")
 plt.ylabel("Compressed file sizes")
 plt.plot([0, 3000000], [0, 3000000], color='red', linestyle='dashed', label="Reference line representing no change in file size")
 plt.legend()
+
+plt.subplot(2, 2, 2)
+plt.title("File sizes before and after OLIVE compression (Seaborn plot)")
+sns.regplot(df, x="original", y="compressed", label="Test files")
+plt.xlabel("Original file sizes")
+plt.ylabel("Compressed file sizes")
+plt.plot([0, 3000000], [0, 3000000], color='red', linestyle='dashed', label="Reference line representing no change in file size")
+plt.legend()
+
+plt.subplot(2, 2, 3)
+plt.title("OLIVE Compression Rates in function of Original File Size (Seaborn plot)")
+sns.regplot(df, x="original", y="compressionRate", label="Test files")
+plt.xlabel("Original file sizes")
+plt.ylabel("Compression rate")
+
+plt.subplot(2, 2, 4)
+plt.title("OLIVE Percent File Size Reduction in function of Original File Size (Seaborn plot)")
+sns.regplot(df, x="original", y="percentReduction", label="Test files")
+plt.xlabel("Original file sizes")
+plt.ylabel("Percent Reduction")
+
+
 plt.show()
 
-
+df.to_csv("test-files/compression-metrics.csv")
 
