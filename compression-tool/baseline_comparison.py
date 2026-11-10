@@ -25,27 +25,35 @@ for file in folder.iterdir():
         lines.append("Compression execution status: " + "OK" if p.returncode == 0 else "ERROR")
         lines.append("Time to execute: " + str(execution_time) + " seconds")
 
-        # File Size
-        size = os.path.getsize(file)
-        lines.append("File size: " + str(size))
-        sizes["original"].append(size)
+        if p.returncode == 0:
+            # File Size
+            size = os.path.getsize(file)
+            lines.append("File size: " + str(size))
+            sizes["original"].append(size)
 
-        # Compressed File Size
-        size = os.path.getsize(out_file_name)
-        lines.append("Compressed size: " + str(size))
-        sizes["compressed"].append(size)
+            # Compressed File Size
+            size = os.path.getsize(out_file_name)
+            lines.append("Compressed size: " + str(size))
+            sizes["compressed"].append(size)
 
-        # Decompression success and time
-        start_time = time.perf_counter() # Record the start time
-        p = subprocess.run(["gzip", "-d", "-c", out_file_name], capture_output=True)
-        execution_time = time.perf_counter() - start_time
-        lines.append("Decompression execution status: " + "OK" if p.returncode == 0 else "ERROR")
-        lines.append("Time to execute: " + str(execution_time) + " seconds")
-        # Report if decompression did not produce identical file
-        diff_p = subprocess.run(f"diff -q {shlex.quote(str(file))} -", input=p.stdout, shell=True, capture_output=True, text=True)
-        lines.append(diff_p.stdout)
+            # Decompression success and time
+            start_time = time.perf_counter() # Record the start time
+            p = subprocess.run(["gzip", "-d", "-c", out_file_name], capture_output=True)
+            execution_time = time.perf_counter() - start_time
+            lines.append("Decompression execution status: " + "OK" if p.returncode == 0 else "ERROR")
+            lines.append("Time to execute: " + str(execution_time) + " seconds")
+            # Report if decompression did not produce identical file
+            if p.returncode == 0:
+                with open(file, "rb") as original_f:
+                    original_bytes = original_f.read()
+                    
+                if original_bytes == p.stdout:
+                    lines.append("Integrity check: OK (Files are identical)")
+                else:
+                    lines.append("Integrity check: ERROR - Decompressed bytes do not match original")
+                lines.append(diff_p.stdout)
 
-with open("test_report.txt", mode='w') as output:
+with open("baseline_test.txt", mode='w') as output:
     output.write("\n".join(lines))
 
 # time ./compression-tool -c "$file"
