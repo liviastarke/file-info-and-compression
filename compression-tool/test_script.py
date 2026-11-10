@@ -21,7 +21,7 @@ for file in folder.iterdir():
         start_time = time.perf_counter() # Record the start time
         p = subprocess.run(["./compression-tool", "-c", file], capture_output=True)
         execution_time = time.perf_counter() - start_time
-        lines.append("Compression execution status: " + "OK" if p.returncode == 0 else "ERROR")
+        lines.append("Compression execution status: " + ("OK" if p.returncode == 0 else "ERROR"))
         lines.append("Time to execute: " + str(execution_time) + " seconds")
 
         # File Size
@@ -38,7 +38,7 @@ for file in folder.iterdir():
         start_time = time.perf_counter() # Record the start time
         p = subprocess.run(["./compression-tool", "-d", "test_out_file.olv"], capture_output=True)
         execution_time = time.perf_counter() - start_time
-        lines.append("Decompression execution status: " + "OK" if p.returncode == 0 else "ERROR")
+        lines.append("Decompression execution status: " + ("OK" if p.returncode == 0 else "ERROR"))
         lines.append("Time to execute: " + str(execution_time) + " seconds")
         # Report if decompression did not produce identical file
         p = subprocess.run(f"diff -q {shlex.quote(str(file))} test_reconstruct_in_file", shell=True, capture_output=True, text=True)
