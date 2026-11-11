@@ -11,7 +11,7 @@ import seaborn as sns
 folder = Path("./test-files") # substitute by your directory path
 
 lines = []
-sizes = {"original":[], "compressed":[]}
+metrics = {"original":[], "compressed":[], "timeCompression":[], "timeDecompression":[]}
 for file in folder.iterdir():
     if file.is_file():
         # File Name
@@ -23,16 +23,17 @@ for file in folder.iterdir():
         execution_time = time.perf_counter() - start_time
         lines.append("Compression execution status: " + ("OK" if p.returncode == 0 else "ERROR"))
         lines.append("Time to execute: " + str(execution_time) + " seconds")
+        metrics["timeCompression"].append(execution_time)
 
         # File Size
         size = os.path.getsize(file)
         lines.append("File size: " + str(size))
-        sizes["original"].append(size)
+        metrics["original"].append(size)
 
         # Compressed File Size
         size = os.path.getsize("test_out_file.olv")
         lines.append("Compressed size: " + str(size))
-        sizes["compressed"].append(size)
+        metrics["compressed"].append(size)
 
         # Decompression success and time
         start_time = time.perf_counter() # Record the start time
@@ -43,6 +44,7 @@ for file in folder.iterdir():
         # Report if decompression did not produce identical file
         p = subprocess.run(f"diff -q {shlex.quote(str(file))} test_reconstruct_in_file", shell=True, capture_output=True, text=True)
         lines.append(p.stdout)
+        metrics["timeDecompression"].append(execution_time)
 
 with open("test_report.txt", mode='w') as output:
     output.write("\n".join(lines))
@@ -54,19 +56,20 @@ with open("test_report.txt", mode='w') as output:
 # diff -s "$file" "test_reconstruct_in_file"
 
 
-df = pd.DataFrame.from_dict(sizes)
+df = pd.DataFrame.from_dict(metrics)
 df["compressionRate"] = df["original"] / df["compressed"]
 df["percentReduction"] = (df["original"] - df["compressed"]) / df["original"]
 df["bitsPerChar"] = df["compressed"] / df["original"]
 
 plt.figure(figsize=(8, 8))
+plt.suptitle("OLIVE command line compression tool - metrics")
 
 plt.subplot(2, 2, 1)
-plt.scatter(sizes["original"], sizes["compressed"], label="Test files")
-plt.title("File sizes before and after OLIVE compression")
-plt.xlabel("Original file sizes")
-plt.ylabel("Compressed file sizes")
-plt.plot([0, 3000000], [0, 3000000], color='red', linestyle='dashed', label="Reference line representing no change in file size")
+plt.scatter(metrics["original"], metrics["timeCompression"], label="Compression times")
+plt.scatter(metrics["original"], metrics["timeDecompression"], label="Decompression times")
+plt.title("Compression and decompression times in function of original file size")
+plt.xlabel("Original file size")
+plt.ylabel("Execution time")
 plt.legend()
 
 plt.subplot(2, 2, 2)
