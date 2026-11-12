@@ -61,12 +61,17 @@ df["compressionRate"] = df["original"] / df["compressed"]
 df["percentReduction"] = (df["original"] - df["compressed"]) / df["original"]
 df["bitsPerChar"] = df["compressed"] / df["original"]
 
+# Determine plot limits based on maximum file size
+max_size = df["compressed"].max()
+if pd.isna(max_size):
+    max_size = 3000000
+
 plt.figure(figsize=(8, 8))
 plt.suptitle("OLIVE command line compression tool - metrics")
 
 plt.subplot(2, 2, 1)
-plt.scatter(metrics["original"], metrics["timeCompression"], label="Compression times")
-plt.scatter(metrics["original"], metrics["timeDecompression"], label="Decompression times")
+sns.regplot(df, x="original", y="timeCompression", label="Compression times")
+sns.regplot(df, x="original", y="timeDecompression", label="Decompression times")
 plt.title("Compression and decompression times in function of original file size")
 plt.xlabel("Original file size")
 plt.ylabel("Execution time")
@@ -77,7 +82,7 @@ plt.title("File sizes before and after OLIVE compression (Seaborn plot)")
 sns.regplot(df, x="original", y="compressed", label="Test files")
 plt.xlabel("Original file sizes")
 plt.ylabel("Compressed file sizes")
-plt.plot([0, 3000000], [0, 3000000], color='red', linestyle='dashed', label="Reference line representing no change in file size")
+plt.plot([0, max_size], [0, max_size], color='red', linestyle='dashed', label="Reference line representing no change in file size")
 plt.legend()
 
 plt.subplot(2, 2, 3)

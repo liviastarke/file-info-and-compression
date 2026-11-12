@@ -138,46 +138,47 @@ if pd.isna(max_size):
 
 plt.figure(figsize=(12, 10))
 
-# 1. Base Matplotlib Scatter
+# Compression and decompression times in function of original file size 
 plt.subplot(2, 2, 1)
-plt.scatter(df["original_size"], df["gzip_compressed"], label="GZIP", alpha=0.7)
-plt.scatter(df["original_size"], df["xz_compressed"], label="XZ", alpha=0.7)
-plt.title("File sizes before and after Compression")
-plt.xlabel("Original file sizes")
-plt.ylabel("Compressed file sizes")
-plt.plot([0, max_size], [0, max_size], color='red', linestyle='dashed', label="No change")
+sns.regplot(df, x="original_size", y="gzip_comp_time", label="Tempo de compressão do GZIP", scatter_kws={"alpha": 0.7})
+sns.regplot(df, x="original_size", y="gzip_decomp_time", label="Tempo de descompressão do GZIP", scatter_kws={"alpha": 0.7})
+sns.regplot(df, x="original_size", y="xz_comp_time", label="Tempo de compressão do XZ", scatter_kws={"alpha": 0.7})
+sns.regplot(df, x="original_size", y="xz_decomp_time", label="Tempo de descompressão do XZ", scatter_kws={"alpha": 0.7})
+plt.title("Tempos de Compressão e Descompressão em função de Tamanho de Arquivo Original")
+plt.xlabel("Tamanho do arquivo original")
+plt.ylabel("Tempo de execução")
 plt.legend()
 
-# 2. Seaborn Regplot (Sizes)
+# File sizes before and after compression
 plt.subplot(2, 2, 2)
-plt.title("File sizes before and after Compression (Seaborn)")
-sns.regplot(data=df, x="original_size", y="gzip_compressed", label="GZIP")
-sns.regplot(data=df, x="original_size", y="xz_compressed", label="XZ")
-plt.xlabel("Original file sizes")
-plt.ylabel("Compressed file sizes")
-plt.plot([0, max_size], [0, max_size], color='red', linestyle='dashed', label="No change")
+plt.title("Tamanhos de Arquivo antes e depois da Compressão")
+sns.regplot(data=df, x="original_size", y="gzip_compressed", label="GZIP", scatter_kws={"alpha": 0.7})
+sns.regplot(data=df, x="original_size", y="xz_compressed", label="XZ", scatter_kws={"alpha": 0.7})
+plt.xlabel("Tamanho do arquivo original")
+plt.ylabel("Tamanho do arquivo comprimido")
+plt.plot([0, max_size], [0, max_size], color='red', linestyle='dashed', label="Linha de referência representando nenhuma mudança no tamanho do arquivo")
 plt.legend()
 
-# 3. Compression Rates
+# Compression Rates by Original File Size
 plt.subplot(2, 2, 3)
-plt.title("Compression Rates by Original File Size")
-sns.regplot(data=df, x="original_size", y="gzip_compressionRate", label="GZIP")
-sns.regplot(data=df, x="original_size", y="xz_compressionRate", label="XZ")
-plt.xlabel("Original file sizes")
-plt.ylabel("Compression rate")
+plt.title("Taxas de Compressão em função de Tamanho de Arquivo Original")
+sns.regplot(data=df, x="original_size", y="gzip_compressionRate", label="GZIP", scatter_kws={"alpha": 0.7})
+sns.regplot(data=df, x="original_size", y="xz_compressionRate", label="XZ", scatter_kws={"alpha": 0.7})
+plt.xlabel("Tamanho do arquivo original")
+plt.ylabel("Taxa de compressão")
 plt.legend()
 
-# 4. Percent Reduction
+# Percent Size Reduction by Original File Size
 plt.subplot(2, 2, 4)
-plt.title("Percent Size Reduction by Original File Size")
-sns.regplot(data=df, x="original_size", y="gzip_percentReduction", label="GZIP")
-sns.regplot(data=df, x="original_size", y="xz_percentReduction", label="XZ")
-plt.xlabel("Original file sizes")
-plt.ylabel("Percent Reduction")
+plt.title("Redução Percentual em função de Tamanho de Arquivo Original")
+sns.regplot(data=df, x="original_size", y="gzip_percentReduction", label="GZIP", scatter_kws={"alpha": 0.7})
+sns.regplot(data=df, x="original_size", y="xz_percentReduction", label="XZ", scatter_kws={"alpha": 0.7})
+plt.xlabel("Tamanho do arquivo original")
+plt.ylabel("Redução Percentual")
 plt.legend()
 
 plt.tight_layout()
 plt.show()
 
 # Save final metrics
-df.to_csv("test-files/gzip_xz_metrics.csv", index=False)
+df.to_csv("test-files/gzip_xz_metrics.csv")
